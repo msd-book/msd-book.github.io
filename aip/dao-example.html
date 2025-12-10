@@ -1,0 +1,815 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>The MSD Book :: DAO Example</title>
+<meta http-equiv="Content-type" content="text/html;charset=UTF-8">
+
+<style>
+/* https://github.com/microsoft/vscode/blob/master/extensions/markdown-language-features/media/markdown.css */
+/*---------------------------------------------------------------------------------------------
+ *  Copyright (c) Microsoft Corporation. All rights reserved.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
+ *--------------------------------------------------------------------------------------------*/
+
+body {
+	font-family: var(--vscode-markdown-font-family, -apple-system, BlinkMacSystemFont, "Segoe WPC", "Segoe UI", "Ubuntu", "Droid Sans", sans-serif);
+	font-size: var(--vscode-markdown-font-size, 14px);
+	padding: 0 26px;
+	line-height: var(--vscode-markdown-line-height, 22px);
+	word-wrap: break-word;
+}
+
+#code-csp-warning {
+	position: fixed;
+	top: 0;
+	right: 0;
+	color: white;
+	margin: 16px;
+	text-align: center;
+	font-size: 12px;
+	font-family: sans-serif;
+	background-color:#444444;
+	cursor: pointer;
+	padding: 6px;
+	box-shadow: 1px 1px 1px rgba(0,0,0,.25);
+}
+
+#code-csp-warning:hover {
+	text-decoration: none;
+	background-color:#007acc;
+	box-shadow: 2px 2px 2px rgba(0,0,0,.25);
+}
+
+body.scrollBeyondLastLine {
+	margin-bottom: calc(100vh - 22px);
+}
+
+body.showEditorSelection .code-line {
+	position: relative;
+}
+
+body.showEditorSelection .code-active-line:before,
+body.showEditorSelection .code-line:hover:before {
+	content: "";
+	display: block;
+	position: absolute;
+	top: 0;
+	left: -12px;
+	height: 100%;
+}
+
+body.showEditorSelection li.code-active-line:before,
+body.showEditorSelection li.code-line:hover:before {
+	left: -30px;
+}
+
+.vscode-light.showEditorSelection .code-active-line:before {
+	border-left: 3px solid rgba(0, 0, 0, 0.15);
+}
+
+.vscode-light.showEditorSelection .code-line:hover:before {
+	border-left: 3px solid rgba(0, 0, 0, 0.40);
+}
+
+.vscode-light.showEditorSelection .code-line .code-line:hover:before {
+	border-left: none;
+}
+
+.vscode-dark.showEditorSelection .code-active-line:before {
+	border-left: 3px solid rgba(255, 255, 255, 0.4);
+}
+
+.vscode-dark.showEditorSelection .code-line:hover:before {
+	border-left: 3px solid rgba(255, 255, 255, 0.60);
+}
+
+.vscode-dark.showEditorSelection .code-line .code-line:hover:before {
+	border-left: none;
+}
+
+.vscode-high-contrast.showEditorSelection .code-active-line:before {
+	border-left: 3px solid rgba(255, 160, 0, 0.7);
+}
+
+.vscode-high-contrast.showEditorSelection .code-line:hover:before {
+	border-left: 3px solid rgba(255, 160, 0, 1);
+}
+
+.vscode-high-contrast.showEditorSelection .code-line .code-line:hover:before {
+	border-left: none;
+}
+
+img {
+	max-width: 100%;
+	max-height: 100%;
+}
+
+a {
+	text-decoration: none;
+}
+
+a:hover {
+	text-decoration: underline;
+}
+
+a:focus,
+input:focus,
+select:focus,
+textarea:focus {
+	outline: 1px solid -webkit-focus-ring-color;
+	outline-offset: -1px;
+}
+
+hr {
+	border: 0;
+	height: 2px;
+	border-bottom: 2px solid;
+}
+
+h1 {
+	padding-bottom: 0.3em;
+	line-height: 1.2;
+	border-bottom-width: 1px;
+	border-bottom-style: solid;
+}
+
+h1, h2, h3 {
+	font-weight: normal;
+}
+
+table {
+	border-collapse: collapse;
+}
+
+table > thead > tr > th {
+	text-align: left;
+	border-bottom: 1px solid;
+}
+
+table > thead > tr > th,
+table > thead > tr > td,
+table > tbody > tr > th,
+table > tbody > tr > td {
+	padding: 5px 10px;
+}
+
+table > tbody > tr + tr > td {
+	border-top: 1px solid;
+}
+
+blockquote {
+	margin: 0 7px 0 5px;
+	padding: 0 16px 0 10px;
+	border-left-width: 5px;
+	border-left-style: solid;
+}
+
+code {
+	font-family: Menlo, Monaco, Consolas, "Droid Sans Mono", "Courier New", monospace, "Droid Sans Fallback";
+	font-size: 1em;
+	line-height: 1.357em;
+}
+
+body.wordWrap pre {
+	white-space: pre-wrap;
+}
+
+pre:not(.hljs),
+pre.hljs code > div {
+	padding: 16px;
+	border-radius: 3px;
+	overflow: auto;
+}
+
+pre code {
+	color: var(--vscode-editor-foreground);
+	tab-size: 4;
+}
+
+/** Theming */
+
+.vscode-light pre {
+	background-color: rgba(220, 220, 220, 0.4);
+}
+
+.vscode-dark pre {
+	background-color: rgba(10, 10, 10, 0.4);
+}
+
+.vscode-high-contrast pre {
+	background-color: rgb(0, 0, 0);
+}
+
+.vscode-high-contrast h1 {
+	border-color: rgb(0, 0, 0);
+}
+
+.vscode-light table > thead > tr > th {
+	border-color: rgba(0, 0, 0, 0.69);
+}
+
+.vscode-dark table > thead > tr > th {
+	border-color: rgba(255, 255, 255, 0.69);
+}
+
+.vscode-light h1,
+.vscode-light hr,
+.vscode-light table > tbody > tr + tr > td {
+	border-color: rgba(0, 0, 0, 0.18);
+}
+
+.vscode-dark h1,
+.vscode-dark hr,
+.vscode-dark table > tbody > tr + tr > td {
+	border-color: rgba(255, 255, 255, 0.18);
+}
+
+</style>
+
+<style>
+/* Tomorrow Theme */
+/* http://jmblog.github.com/color-themes-for-google-code-highlightjs */
+/* Original theme - https://github.com/chriskempson/tomorrow-theme */
+
+/* Tomorrow Comment */
+.hljs-comment,
+.hljs-quote {
+	color: #8e908c;
+}
+
+/* Tomorrow Red */
+.hljs-variable,
+.hljs-template-variable,
+.hljs-tag,
+.hljs-name,
+.hljs-selector-id,
+.hljs-selector-class,
+.hljs-regexp,
+.hljs-deletion {
+	color: #c82829;
+}
+
+/* Tomorrow Orange */
+.hljs-number,
+.hljs-built_in,
+.hljs-builtin-name,
+.hljs-literal,
+.hljs-type,
+.hljs-params,
+.hljs-meta,
+.hljs-link {
+	color: #f5871f;
+}
+
+/* Tomorrow Yellow */
+.hljs-attribute {
+	color: #eab700;
+}
+
+/* Tomorrow Green */
+.hljs-string,
+.hljs-symbol,
+.hljs-bullet,
+.hljs-addition {
+	color: #718c00;
+}
+
+/* Tomorrow Blue */
+.hljs-title,
+.hljs-section {
+	color: #4271ae;
+}
+
+/* Tomorrow Purple */
+.hljs-keyword,
+.hljs-selector-tag {
+	color: #8959a8;
+}
+
+.hljs {
+	display: block;
+	overflow-x: auto;
+	color: #4d4d4c;
+	padding: 0.5em;
+}
+
+.hljs-emphasis {
+	font-style: italic;
+}
+
+.hljs-strong {
+	font-weight: bold;
+}
+</style>
+
+<style>
+/*
+ * Markdown PDF CSS
+ */
+
+ body {
+	font-family: -apple-system, BlinkMacSystemFont, "Segoe WPC", "Segoe UI", "Ubuntu", "Droid Sans", sans-serif, "Meiryo";
+	padding: 0 12px;
+}
+
+pre {
+	background-color: #f8f8f8;
+	border: 1px solid #cccccc;
+	border-radius: 3px;
+	overflow-x: auto;
+	white-space: pre-wrap;
+	overflow-wrap: break-word;
+}
+
+pre:not(.hljs) {
+	padding: 23px;
+	line-height: 19px;
+}
+
+blockquote {
+	background: rgba(127, 127, 127, 0.1);
+	border-color: rgba(0, 122, 204, 0.5);
+}
+
+.emoji {
+	height: 1.4em;
+}
+
+code {
+	font-size: 14px;
+	line-height: 19px;
+}
+
+/* for inline code */
+:not(pre):not(.hljs) > code {
+	color: #C9AE75; /* Change the old color so it seems less like an error */
+	font-size: inherit;
+}
+
+/* Page Break : use <div class="page"/> to insert page break
+-------------------------------------------------------- */
+.page {
+	page-break-after: always;
+}
+
+</style>
+
+<script src="https://unpkg.com/mermaid/dist/mermaid.min.js"></script>
+</head>
+<body>
+  <script>
+    mermaid.initialize({
+      startOnLoad: true,
+      theme: document.body.classList.contains('vscode-dark') || document.body.classList.contains('vscode-high-contrast')
+          ? 'dark'
+          : 'default'
+    });
+  </script>
+<h1 id="what-is-a-dao-data-access-object">What is a DAO (Data Access Object)?</h1>
+<p>
+    <img src="msd-book-front.png" 
+    alt="The MSD Book" width="200" style="float: left; margin: 0 1rem 1rem 0;"/>
+    A <strong>Data Access Object (DAO)</strong> is a design pattern that encapsulates all access to a data source (database, file, remote service) behind a simple API. The DAO exposes CRUD and query operations for domain objects and hides the low-level persistence details (SQL, connections, ORM specifics).</p>
+<p><strong>Short:</strong> DAO = domain-centric interface + concrete implementation that talks to the DB.</p>
+<hr>
+<h1 id="why-use-a-dao">Why use a DAO?</h1>
+<ul>
+<li><strong>Separation of concerns</strong> — keeps persistence code out of business logic.</li>
+<li><strong>Testability</strong> — you can mock or fake the DAO in unit tests.</li>
+<li><strong>Single place for DB rules</strong> — central location for SQL, transactions, retry logic, logging.</li>
+<li><strong>Swapability</strong> — swap DB implementations (e.g. ADO.NET → Dapper → EF Core) without touching business code.</li>
+<li><strong>Consistency &amp; safety</strong> — standardize parameterization, connection handling, transactions.</li>
+</ul>
+<hr>
+<h1 id="where--how-to-use-it">Where &amp; how to use it</h1>
+<ul>
+<li>Use DAOs at the boundary between domain/services and the persistence layer.</li>
+<li>Keep DAOs focused on persistence operations only; no business rules.</li>
+<li>Prefer small, focused DAO interfaces (per aggregate/entity) rather than one huge database service.</li>
+<li>Implement async I/O, parameterized queries, proper connection/transaction management, and expose a testable interface.</li>
+</ul>
+<hr>
+<h1 id="real-world-c-example-clean-practical-ready-to-run-pattern">Real-world C# example (clean, practical, ready-to-run pattern)</h1>
+<p>Below is a compact, production-minded example showing:</p>
+<ul>
+<li>domain entity <code>Customer</code></li>
+<li>DAO interface <code>ICustomerDao</code></li>
+<li>ADO.NET implementation <code>SqlCustomerDao</code> (async, parameterized, connection factory)</li>
+<li>a <code>FakeCustomerDao</code> for tests</li>
+<li>DI registration and usage sample</li>
+</ul>
+<blockquote>
+<p>This uses <code>Microsoft.Data.SqlClient</code> and <code>System.Data</code>. Replace with your preferred DB provider or an ORM.</p>
+</blockquote>
+<hr>
+<h2 id="1-sql-table-example">1) SQL table (example)</h2>
+<pre class="hljs"><code><div><span class="hljs-keyword">CREATE</span> <span class="hljs-keyword">TABLE</span> Customers (
+    <span class="hljs-keyword">Id</span> <span class="hljs-built_in">INT</span> <span class="hljs-keyword">IDENTITY</span> PRIMARY <span class="hljs-keyword">KEY</span>,
+    FirstName <span class="hljs-keyword">NVARCHAR</span>(<span class="hljs-number">100</span>) <span class="hljs-keyword">NOT</span> <span class="hljs-literal">NULL</span>,
+    LastName <span class="hljs-keyword">NVARCHAR</span>(<span class="hljs-number">100</span>) <span class="hljs-keyword">NOT</span> <span class="hljs-literal">NULL</span>,
+    Email <span class="hljs-keyword">NVARCHAR</span>(<span class="hljs-number">256</span>) <span class="hljs-keyword">NOT</span> <span class="hljs-literal">NULL</span> <span class="hljs-keyword">UNIQUE</span>,
+    CreatedUtc DATETIME2 <span class="hljs-keyword">NOT</span> <span class="hljs-literal">NULL</span> <span class="hljs-keyword">DEFAULT</span> <span class="hljs-keyword">SYSUTCDATETIME</span>()
+);
+</div></code></pre>
+<hr>
+<h2 id="2-domain-entity">2) Domain entity</h2>
+<pre class="hljs"><code><div><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title">Customer</span>
+{
+    <span class="hljs-keyword">public</span> <span class="hljs-keyword">int</span> Id { <span class="hljs-keyword">get</span>; <span class="hljs-keyword">set</span>; }            <span class="hljs-comment">// 0 =&gt; not persisted yet</span>
+    <span class="hljs-keyword">public</span> <span class="hljs-keyword">string</span> FirstName { <span class="hljs-keyword">get</span>; <span class="hljs-keyword">set</span>; } = <span class="hljs-string">""</span>;
+    <span class="hljs-keyword">public</span> <span class="hljs-keyword">string</span> LastName { <span class="hljs-keyword">get</span>; <span class="hljs-keyword">set</span>; } = <span class="hljs-string">""</span>;
+    <span class="hljs-keyword">public</span> <span class="hljs-keyword">string</span> Email { <span class="hljs-keyword">get</span>; <span class="hljs-keyword">set</span>; } = <span class="hljs-string">""</span>;
+    <span class="hljs-keyword">public</span> DateTime CreatedUtc { <span class="hljs-keyword">get</span>; <span class="hljs-keyword">set</span>; }
+}
+</div></code></pre>
+<hr>
+<h2 id="3-connection-factory-abstraction-for-testability">3) Connection factory (abstraction for testability)</h2>
+<pre class="hljs"><code><div><span class="hljs-keyword">using</span> System.Data;
+
+<span class="hljs-keyword">public</span> <span class="hljs-keyword">interface</span> <span class="hljs-title">IDbConnectionFactory</span>
+{
+    <span class="hljs-function">Task&lt;IDbConnection&gt; <span class="hljs-title">CreateOpenConnectionAsync</span>(<span class="hljs-params">CancellationToken ct = <span class="hljs-keyword">default</span></span>)</span>;
+}
+
+<span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title">SqlConnectionFactory</span> : <span class="hljs-title">IDbConnectionFactory</span>
+{
+    <span class="hljs-keyword">private</span> <span class="hljs-keyword">readonly</span> <span class="hljs-keyword">string</span> _connectionString;
+    <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-title">SqlConnectionFactory</span>(<span class="hljs-params"><span class="hljs-keyword">string</span> connectionString</span>)</span> =&gt; _connectionString = connectionString;
+
+    <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">async</span> Task&lt;IDbConnection&gt; <span class="hljs-title">CreateOpenConnectionAsync</span>(<span class="hljs-params">CancellationToken ct = <span class="hljs-keyword">default</span></span>)</span>
+    {
+        <span class="hljs-keyword">var</span> conn = <span class="hljs-keyword">new</span> Microsoft.Data.SqlClient.SqlConnection(_connectionString);
+        <span class="hljs-keyword">await</span> conn.OpenAsync(ct).ConfigureAwait(<span class="hljs-literal">false</span>);
+        <span class="hljs-keyword">return</span> conn;
+    }
+}
+</div></code></pre>
+<hr>
+<h2 id="4-dao-interface">4) DAO interface</h2>
+<pre class="hljs"><code><div><span class="hljs-keyword">using</span> System.Collections.Generic;
+<span class="hljs-keyword">using</span> System.Threading;
+<span class="hljs-keyword">using</span> System.Threading.Tasks;
+
+<span class="hljs-keyword">public</span> <span class="hljs-keyword">interface</span> <span class="hljs-title">ICustomerDao</span>
+{
+    Task&lt;Customer?&gt; GetByIdAsync(<span class="hljs-keyword">int</span> id, CancellationToken ct = <span class="hljs-keyword">default</span>);
+    Task&lt;Customer?&gt; GetByEmailAsync(<span class="hljs-keyword">string</span> email, CancellationToken ct = <span class="hljs-keyword">default</span>);
+    Task&lt;IReadOnlyList&lt;Customer&gt;&gt; GetAllAsync(CancellationToken ct = <span class="hljs-keyword">default</span>);
+    <span class="hljs-function">Task&lt;<span class="hljs-keyword">int</span>&gt; <span class="hljs-title">AddAsync</span>(<span class="hljs-params">Customer customer, CancellationToken ct = <span class="hljs-keyword">default</span></span>)</span>; <span class="hljs-comment">// returns new Id</span>
+    <span class="hljs-function">Task&lt;<span class="hljs-keyword">bool</span>&gt; <span class="hljs-title">UpdateAsync</span>(<span class="hljs-params">Customer customer, CancellationToken ct = <span class="hljs-keyword">default</span></span>)</span>;
+    <span class="hljs-function">Task&lt;<span class="hljs-keyword">bool</span>&gt; <span class="hljs-title">DeleteAsync</span>(<span class="hljs-params"><span class="hljs-keyword">int</span> id, CancellationToken ct = <span class="hljs-keyword">default</span></span>)</span>;
+}
+</div></code></pre>
+<hr>
+<h2 id="5-adonet-implementation-sqlcustomerdao">5) ADO.NET implementation (SqlCustomerDao)</h2>
+<pre class="hljs"><code><div><span class="hljs-keyword">using</span> System;
+<span class="hljs-keyword">using</span> System.Collections.Generic;
+<span class="hljs-keyword">using</span> System.Data;
+<span class="hljs-keyword">using</span> System.Threading;
+<span class="hljs-keyword">using</span> System.Threading.Tasks;
+
+<span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title">SqlCustomerDao</span> : <span class="hljs-title">ICustomerDao</span>
+{
+    <span class="hljs-keyword">private</span> <span class="hljs-keyword">readonly</span> IDbConnectionFactory _connectionFactory;
+    <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-title">SqlCustomerDao</span>(<span class="hljs-params">IDbConnectionFactory connectionFactory</span>)</span>
+        =&gt; _connectionFactory = connectionFactory;
+
+    <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">async</span> Task&lt;<span class="hljs-keyword">int</span>&gt; <span class="hljs-title">AddAsync</span>(<span class="hljs-params">Customer customer, CancellationToken ct = <span class="hljs-keyword">default</span></span>)</span>
+    {
+        <span class="hljs-keyword">const</span> <span class="hljs-keyword">string</span> sql = <span class="hljs-string">@"
+INSERT INTO Customers (FirstName, LastName, Email)
+VALUES (@FirstName, @LastName, @Email);
+SELECT CAST(SCOPE_IDENTITY() AS int);
+"</span>;
+        <span class="hljs-keyword">await</span> <span class="hljs-keyword">using</span> <span class="hljs-keyword">var</span> conn = <span class="hljs-keyword">await</span> _connectionFactory.CreateOpenConnectionAsync(ct).ConfigureAwait(<span class="hljs-literal">false</span>);
+        <span class="hljs-keyword">await</span> <span class="hljs-keyword">using</span> <span class="hljs-keyword">var</span> cmd = conn.CreateCommand();
+        cmd.CommandText = sql;
+        AddParameter(cmd, <span class="hljs-string">"@FirstName"</span>, customer.FirstName);
+        AddParameter(cmd, <span class="hljs-string">"@LastName"</span>, customer.LastName);
+        AddParameter(cmd, <span class="hljs-string">"@Email"</span>, customer.Email);
+
+        <span class="hljs-keyword">var</span> result = <span class="hljs-keyword">await</span> ExecuteScalarAsync(cmd, ct).ConfigureAwait(<span class="hljs-literal">false</span>);
+        <span class="hljs-keyword">return</span> Convert.ToInt32(result);
+    }
+
+    <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">async</span> Task&lt;<span class="hljs-keyword">bool</span>&gt; <span class="hljs-title">UpdateAsync</span>(<span class="hljs-params">Customer customer, CancellationToken ct = <span class="hljs-keyword">default</span></span>)</span>
+    {
+        <span class="hljs-keyword">const</span> <span class="hljs-keyword">string</span> sql = <span class="hljs-string">@"
+UPDATE Customers
+SET FirstName = @FirstName, LastName = @LastName, Email = @Email
+WHERE Id = @Id;
+"</span>;
+        <span class="hljs-keyword">await</span> <span class="hljs-keyword">using</span> <span class="hljs-keyword">var</span> conn = <span class="hljs-keyword">await</span> _connectionFactory.CreateOpenConnectionAsync(ct).ConfigureAwait(<span class="hljs-literal">false</span>);
+        <span class="hljs-keyword">await</span> <span class="hljs-keyword">using</span> <span class="hljs-keyword">var</span> cmd = conn.CreateCommand();
+        cmd.CommandText = sql;
+        AddParameter(cmd, <span class="hljs-string">"@Id"</span>, customer.Id);
+        AddParameter(cmd, <span class="hljs-string">"@FirstName"</span>, customer.FirstName);
+        AddParameter(cmd, <span class="hljs-string">"@LastName"</span>, customer.LastName);
+        AddParameter(cmd, <span class="hljs-string">"@Email"</span>, customer.Email);
+
+        <span class="hljs-keyword">var</span> affected = <span class="hljs-keyword">await</span> ExecuteNonQueryAsync(cmd, ct).ConfigureAwait(<span class="hljs-literal">false</span>);
+        <span class="hljs-keyword">return</span> affected &gt; <span class="hljs-number">0</span>;
+    }
+
+    <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">async</span> Task&lt;<span class="hljs-keyword">bool</span>&gt; <span class="hljs-title">DeleteAsync</span>(<span class="hljs-params"><span class="hljs-keyword">int</span> id, CancellationToken ct = <span class="hljs-keyword">default</span></span>)</span>
+    {
+        <span class="hljs-keyword">const</span> <span class="hljs-keyword">string</span> sql = <span class="hljs-string">"DELETE FROM Customers WHERE Id = @Id;"</span>;
+        <span class="hljs-keyword">await</span> <span class="hljs-keyword">using</span> <span class="hljs-keyword">var</span> conn = <span class="hljs-keyword">await</span> _connectionFactory.CreateOpenConnectionAsync(ct).ConfigureAwait(<span class="hljs-literal">false</span>);
+        <span class="hljs-keyword">await</span> <span class="hljs-keyword">using</span> <span class="hljs-keyword">var</span> cmd = conn.CreateCommand();
+        cmd.CommandText = sql;
+        AddParameter(cmd, <span class="hljs-string">"@Id"</span>, id);
+        <span class="hljs-keyword">var</span> affected = <span class="hljs-keyword">await</span> ExecuteNonQueryAsync(cmd, ct).ConfigureAwait(<span class="hljs-literal">false</span>);
+        <span class="hljs-keyword">return</span> affected &gt; <span class="hljs-number">0</span>;
+    }
+
+    <span class="hljs-keyword">public</span> <span class="hljs-keyword">async</span> Task&lt;Customer?&gt; GetByIdAsync(<span class="hljs-keyword">int</span> id, CancellationToken ct = <span class="hljs-keyword">default</span>)
+    {
+        <span class="hljs-keyword">const</span> <span class="hljs-keyword">string</span> sql = <span class="hljs-string">"SELECT Id, FirstName, LastName, Email, CreatedUtc FROM Customers WHERE Id = @Id;"</span>;
+        <span class="hljs-keyword">await</span> <span class="hljs-keyword">using</span> <span class="hljs-keyword">var</span> conn = <span class="hljs-keyword">await</span> _connectionFactory.CreateOpenConnectionAsync(ct).ConfigureAwait(<span class="hljs-literal">false</span>);
+        <span class="hljs-keyword">await</span> <span class="hljs-keyword">using</span> <span class="hljs-keyword">var</span> cmd = conn.CreateCommand();
+        cmd.CommandText = sql;
+        AddParameter(cmd, <span class="hljs-string">"@Id"</span>, id);
+        <span class="hljs-keyword">await</span> <span class="hljs-keyword">using</span> <span class="hljs-keyword">var</span> reader = <span class="hljs-keyword">await</span> ExecuteReaderAsync(cmd, ct).ConfigureAwait(<span class="hljs-literal">false</span>);
+        <span class="hljs-keyword">if</span> (!<span class="hljs-keyword">await</span> ReadAsync(reader, ct).ConfigureAwait(<span class="hljs-literal">false</span>)) <span class="hljs-keyword">return</span> <span class="hljs-literal">null</span>;
+        <span class="hljs-keyword">return</span> MapCustomer(reader);
+    }
+
+    <span class="hljs-keyword">public</span> <span class="hljs-keyword">async</span> Task&lt;Customer?&gt; GetByEmailAsync(<span class="hljs-keyword">string</span> email, CancellationToken ct = <span class="hljs-keyword">default</span>)
+    {
+        <span class="hljs-keyword">const</span> <span class="hljs-keyword">string</span> sql = <span class="hljs-string">"SELECT Id, FirstName, LastName, Email, CreatedUtc FROM Customers WHERE Email = @Email;"</span>;
+        <span class="hljs-keyword">await</span> <span class="hljs-keyword">using</span> <span class="hljs-keyword">var</span> conn = <span class="hljs-keyword">await</span> _connectionFactory.CreateOpenConnectionAsync(ct).ConfigureAwait(<span class="hljs-literal">false</span>);
+        <span class="hljs-keyword">await</span> <span class="hljs-keyword">using</span> <span class="hljs-keyword">var</span> cmd = conn.CreateCommand();
+        cmd.CommandText = sql;
+        AddParameter(cmd, <span class="hljs-string">"@Email"</span>, email);
+        <span class="hljs-keyword">await</span> <span class="hljs-keyword">using</span> <span class="hljs-keyword">var</span> reader = <span class="hljs-keyword">await</span> ExecuteReaderAsync(cmd, ct).ConfigureAwait(<span class="hljs-literal">false</span>);
+        <span class="hljs-keyword">if</span> (!<span class="hljs-keyword">await</span> ReadAsync(reader, ct).ConfigureAwait(<span class="hljs-literal">false</span>)) <span class="hljs-keyword">return</span> <span class="hljs-literal">null</span>;
+        <span class="hljs-keyword">return</span> MapCustomer(reader);
+    }
+
+    <span class="hljs-keyword">public</span> <span class="hljs-keyword">async</span> Task&lt;IReadOnlyList&lt;Customer&gt;&gt; GetAllAsync(CancellationToken ct = <span class="hljs-keyword">default</span>)
+    {
+        <span class="hljs-keyword">const</span> <span class="hljs-keyword">string</span> sql = <span class="hljs-string">"SELECT Id, FirstName, LastName, Email, CreatedUtc FROM Customers ORDER BY Id;"</span>;
+        <span class="hljs-keyword">var</span> list = <span class="hljs-keyword">new</span> List&lt;Customer&gt;();
+        <span class="hljs-keyword">await</span> <span class="hljs-keyword">using</span> <span class="hljs-keyword">var</span> conn = <span class="hljs-keyword">await</span> _connectionFactory.CreateOpenConnectionAsync(ct).ConfigureAwait(<span class="hljs-literal">false</span>);
+        <span class="hljs-keyword">await</span> <span class="hljs-keyword">using</span> <span class="hljs-keyword">var</span> cmd = conn.CreateCommand();
+        cmd.CommandText = sql;
+        <span class="hljs-keyword">await</span> <span class="hljs-keyword">using</span> <span class="hljs-keyword">var</span> reader = <span class="hljs-keyword">await</span> ExecuteReaderAsync(cmd, ct).ConfigureAwait(<span class="hljs-literal">false</span>);
+        <span class="hljs-keyword">while</span> (<span class="hljs-keyword">await</span> ReadAsync(reader, ct).ConfigureAwait(<span class="hljs-literal">false</span>))
+            list.Add(MapCustomer(reader));
+        <span class="hljs-keyword">return</span> list;
+    }
+
+    <span class="hljs-meta">#<span class="hljs-meta-keyword">region</span> helpers (ADO abstractions to keep code short)</span>
+    <span class="hljs-comment">// The following helpers use dynamic typing on IDbCommand / IDataReader</span>
+    <span class="hljs-comment">// to keep the example compact. In production you may prefer typed provider types or Dapper.</span>
+
+    <span class="hljs-function"><span class="hljs-keyword">private</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">void</span> <span class="hljs-title">AddParameter</span>(<span class="hljs-params">IDbCommand cmd, <span class="hljs-keyword">string</span> name, <span class="hljs-keyword">object</span>? <span class="hljs-keyword">value</span></span>)</span>
+    {
+        <span class="hljs-keyword">var</span> p = cmd.CreateParameter();
+        p.ParameterName = name;
+        p.Value = <span class="hljs-keyword">value</span> ?? DBNull.Value;
+        cmd.Parameters.Add(p);
+    }
+
+    <span class="hljs-keyword">private</span> <span class="hljs-keyword">static</span> Task&lt;<span class="hljs-keyword">object</span>?&gt; ExecuteScalarAsync(IDbCommand cmd, CancellationToken ct)
+    {
+        <span class="hljs-keyword">if</span> (cmd <span class="hljs-keyword">is</span> Microsoft.Data.SqlClient.SqlCommand sqlCmd)
+            <span class="hljs-keyword">return</span> sqlCmd.ExecuteScalarAsync(ct).ContinueWith(t =&gt; (<span class="hljs-keyword">object</span>?)t.Result, ct);
+        <span class="hljs-comment">// fallback synchronous wrapper:</span>
+        <span class="hljs-keyword">return</span> Task.FromResult(cmd.ExecuteScalar());
+    }
+
+    <span class="hljs-function"><span class="hljs-keyword">private</span> <span class="hljs-keyword">static</span> Task&lt;<span class="hljs-keyword">int</span>&gt; <span class="hljs-title">ExecuteNonQueryAsync</span>(<span class="hljs-params">IDbCommand cmd, CancellationToken ct</span>)</span>
+    {
+        <span class="hljs-keyword">if</span> (cmd <span class="hljs-keyword">is</span> Microsoft.Data.SqlClient.SqlCommand sqlCmd)
+            <span class="hljs-keyword">return</span> sqlCmd.ExecuteNonQueryAsync(ct);
+        <span class="hljs-keyword">return</span> Task.FromResult(cmd.ExecuteNonQuery());
+    }
+
+    <span class="hljs-function"><span class="hljs-keyword">private</span> <span class="hljs-keyword">static</span> Task&lt;IDataReader&gt; <span class="hljs-title">ExecuteReaderAsync</span>(<span class="hljs-params">IDbCommand cmd, CancellationToken ct</span>)</span>
+    {
+        <span class="hljs-keyword">if</span> (cmd <span class="hljs-keyword">is</span> Microsoft.Data.SqlClient.SqlCommand sqlCmd)
+            <span class="hljs-keyword">return</span> sqlCmd.ExecuteReaderAsync(ct).ContinueWith(t =&gt; (IDataReader)t.Result, ct);
+        <span class="hljs-keyword">return</span> Task.FromResult(cmd.ExecuteReader());
+    }
+
+    <span class="hljs-function"><span class="hljs-keyword">private</span> <span class="hljs-keyword">static</span> Task&lt;<span class="hljs-keyword">bool</span>&gt; <span class="hljs-title">ReadAsync</span>(<span class="hljs-params">IDataReader reader, CancellationToken ct</span>)</span>
+    {
+        <span class="hljs-keyword">if</span> (reader <span class="hljs-keyword">is</span> Microsoft.Data.SqlClient.SqlDataReader sqlReader)
+            <span class="hljs-keyword">return</span> sqlReader.ReadAsync(ct);
+        <span class="hljs-keyword">return</span> Task.FromResult(reader.Read());
+    }
+
+    <span class="hljs-function"><span class="hljs-keyword">private</span> <span class="hljs-keyword">static</span> Customer <span class="hljs-title">MapCustomer</span>(<span class="hljs-params">IDataReader r</span>)</span>
+    {
+        <span class="hljs-keyword">return</span> <span class="hljs-keyword">new</span> Customer
+        {
+            Id = r.GetInt32(r.GetOrdinal(<span class="hljs-string">"Id"</span>)),
+            FirstName = r.GetString(r.GetOrdinal(<span class="hljs-string">"FirstName"</span>)),
+            LastName = r.GetString(r.GetOrdinal(<span class="hljs-string">"LastName"</span>)),
+            Email = r.GetString(r.GetOrdinal(<span class="hljs-string">"Email"</span>)),
+            CreatedUtc = r.GetDateTime(r.GetOrdinal(<span class="hljs-string">"CreatedUtc"</span>))
+        };
+    }
+    <span class="hljs-meta">#<span class="hljs-meta-keyword">endregion</span></span>
+}
+</div></code></pre>
+<p><strong>Notes on the implementation</strong></p>
+<ul>
+<li>Parameterized queries to avoid SQL injection.</li>
+<li><code>IDbConnectionFactory</code> keeps connection creation centralized and testable.</li>
+<li>Async APIs everywhere for scalable I/O.</li>
+<li>The helper methods provide a small shim to use <code>IDbCommand</code>/<code>IDataReader</code> async methods only when the provider supports them; replace with provider-specific APIs in production or use Dapper/EF Core to reduce boilerplate.</li>
+</ul>
+<hr>
+<h2 id="6-fake-dao-for-unit-tests">6) Fake DAO for unit tests</h2>
+<pre class="hljs"><code><div><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title">FakeCustomerDao</span> : <span class="hljs-title">ICustomerDao</span>
+{
+    <span class="hljs-keyword">private</span> <span class="hljs-keyword">readonly</span> List&lt;Customer&gt; _store = <span class="hljs-keyword">new</span>();
+    <span class="hljs-keyword">private</span> <span class="hljs-keyword">int</span> _nextId = <span class="hljs-number">1</span>;
+
+    <span class="hljs-function"><span class="hljs-keyword">public</span> Task&lt;<span class="hljs-keyword">int</span>&gt; <span class="hljs-title">AddAsync</span>(<span class="hljs-params">Customer customer, CancellationToken ct = <span class="hljs-keyword">default</span></span>)</span>
+    {
+        customer.Id = _nextId++;
+        customer.CreatedUtc = DateTime.UtcNow;
+        _store.Add(customer);
+        <span class="hljs-keyword">return</span> Task.FromResult(customer.Id);
+    }
+
+    <span class="hljs-function"><span class="hljs-keyword">public</span> Task&lt;<span class="hljs-keyword">bool</span>&gt; <span class="hljs-title">UpdateAsync</span>(<span class="hljs-params">Customer customer, CancellationToken ct = <span class="hljs-keyword">default</span></span>)</span>
+    {
+        <span class="hljs-keyword">var</span> idx = _store.FindIndex(c =&gt; c.Id == customer.Id);
+        <span class="hljs-keyword">if</span> (idx &lt; <span class="hljs-number">0</span>) <span class="hljs-keyword">return</span> Task.FromResult(<span class="hljs-literal">false</span>);
+        _store[idx] = customer;
+        <span class="hljs-keyword">return</span> Task.FromResult(<span class="hljs-literal">true</span>);
+    }
+
+    <span class="hljs-function"><span class="hljs-keyword">public</span> Task&lt;<span class="hljs-keyword">bool</span>&gt; <span class="hljs-title">DeleteAsync</span>(<span class="hljs-params"><span class="hljs-keyword">int</span> id, CancellationToken ct = <span class="hljs-keyword">default</span></span>)</span>
+    {
+        <span class="hljs-keyword">var</span> removed = _store.RemoveAll(c =&gt; c.Id == id) &gt; <span class="hljs-number">0</span>;
+        <span class="hljs-keyword">return</span> Task.FromResult(removed);
+    }
+
+    <span class="hljs-keyword">public</span> Task&lt;Customer?&gt; GetByIdAsync(<span class="hljs-keyword">int</span> id, CancellationToken ct = <span class="hljs-keyword">default</span>)
+        =&gt; Task.FromResult(_store.Find(c =&gt; c.Id == id));
+
+    <span class="hljs-keyword">public</span> Task&lt;Customer?&gt; GetByEmailAsync(<span class="hljs-keyword">string</span> email, CancellationToken ct = <span class="hljs-keyword">default</span>)
+        =&gt; Task.FromResult(_store.Find(c =&gt; c.Email.Equals(email, StringComparison.OrdinalIgnoreCase)));
+
+    <span class="hljs-keyword">public</span> Task&lt;IReadOnlyList&lt;Customer&gt;&gt; GetAllAsync(CancellationToken ct = <span class="hljs-keyword">default</span>)
+        =&gt; Task.FromResult((IReadOnlyList&lt;Customer&gt;)_store.ToArray());
+}
+</div></code></pre>
+<p>Use <code>FakeCustomerDao</code> to unit-test service/business logic without a database.</p>
+<hr>
+<h2 id="7-di-registration-aspnet-core-style">7) DI registration (ASP.NET Core style)</h2>
+<pre class="hljs"><code><div><span class="hljs-comment">// Program.cs / Startup.cs</span>
+builder.Services.AddSingleton&lt;IDbConnectionFactory&gt;(_ =&gt;
+    <span class="hljs-keyword">new</span> SqlConnectionFactory(configuration.GetConnectionString(<span class="hljs-string">"DefaultConnection"</span>)));
+builder.Services.AddScoped&lt;ICustomerDao, SqlCustomerDao&gt;();
+</div></code></pre>
+<hr>
+<h2 id="8-example-usage-in-a-service">8) Example usage in a service</h2>
+<pre class="hljs"><code><div><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title">CustomerService</span>
+{
+    <span class="hljs-keyword">private</span> <span class="hljs-keyword">readonly</span> ICustomerDao _dao;
+    <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-title">CustomerService</span>(<span class="hljs-params">ICustomerDao dao</span>)</span> =&gt; _dao = dao;
+
+    <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">async</span> Task&lt;Customer&gt; <span class="hljs-title">RegisterAsync</span>(<span class="hljs-params"><span class="hljs-keyword">string</span> firstName, <span class="hljs-keyword">string</span> lastName, <span class="hljs-keyword">string</span> email, CancellationToken ct = <span class="hljs-keyword">default</span></span>)</span>
+    {
+        <span class="hljs-keyword">if</span> (<span class="hljs-keyword">string</span>.IsNullOrWhiteSpace(email)) <span class="hljs-keyword">throw</span> <span class="hljs-keyword">new</span> ArgumentException(<span class="hljs-string">"email"</span>);
+        <span class="hljs-keyword">var</span> existing = <span class="hljs-keyword">await</span> _dao.GetByEmailAsync(email, ct).ConfigureAwait(<span class="hljs-literal">false</span>);
+        <span class="hljs-keyword">if</span> (existing != <span class="hljs-literal">null</span>) <span class="hljs-keyword">throw</span> <span class="hljs-keyword">new</span> InvalidOperationException(<span class="hljs-string">"Email already used."</span>);
+
+        <span class="hljs-keyword">var</span> c = <span class="hljs-keyword">new</span> Customer { FirstName = firstName, LastName = lastName, Email = email };
+        c.Id = <span class="hljs-keyword">await</span> _dao.AddAsync(c, ct).ConfigureAwait(<span class="hljs-literal">false</span>);
+        <span class="hljs-keyword">return</span> c;
+    }
+}
+</div></code></pre>
+<p>Because <code>CustomerService</code> only depends on <code>ICustomerDao</code>, you can inject <code>FakeCustomerDao</code> in tests.</p>
+<hr>
+<h1 id="additional-best-practices--pitfalls">Additional best practices &amp; pitfalls</h1>
+<p><strong>Best practices</strong></p>
+<ul>
+<li>Expose domain-friendly methods (e.g., <code>FindActiveByEmailAsync</code>) instead of raw SQL callers.</li>
+<li>Keep transactions at a higher level (service layer) when multiple DAOs are involved; expose overloads that accept an <code>IDbTransaction</code> if needed.</li>
+<li>Log queries and execution time for slow query monitoring.</li>
+<li>Use parameterized queries (always).</li>
+<li>Consider an ORM (EF Core/Dapper) if it reduces boilerplate; DAO pattern still applies (DAO wraps ORM).</li>
+</ul>
+<p><strong>Common pitfalls</strong></p>
+<ul>
+<li>Placing business rules in DAOs.</li>
+<li>Returning raw SQL rows / <code>DataTable</code> — prefer domain objects.</li>
+<li>Not handling connection/transaction lifecycle properly (leaks).</li>
+<li>Tight coupling to a specific DB provider in business code (avoid by using interfaces).</li>
+</ul>
+<hr>
+<h1 id="tldr">TL;DR</h1>
+<p>A DAO isolates persistence behind a small interface so your business code is testable, swap-able, and simpler. Implement it as an interface + concrete class (or wrapper around your ORM), do async I/O, parameterize queries, centralize connection creation, and provide fakes for tests. The example above gives a complete, practical C# pattern you can drop into an app and iterate on.</p>
+<p>If you want, I can:</p>
+<ul>
+<li>convert the ADO.NET implementation into a Dapper or EF Core version,</li>
+<li>show how to manage multi-DAO transactions,</li>
+<li>or provide a unit test example using xUnit and the <code>FakeCustomerDao</code>. Which one would help you most?</li>
+</ul>
+<h1 id="is-the-dao-pattern-still-relevant-with-modern-frameworks-like-aspnet-core-and-orms">Is the DAO pattern still relevant with modern frameworks like ASP.NET Core and ORMs?</h1>
+<p>Yes — <strong>DAO is still relevant</strong>, but its shape changes depending on how you use your ORM and what architectural style you follow. The pattern hasn’t disappeared; it has simply evolved.</p>
+<p>Below is a practical, modern view that applies to real ASP.NET Core systems.</p>
+<hr>
+<h1 id="why-dao-still-matters">Why DAO still matters</h1>
+<p>Even with EF Core, Dapper, or other ORMs, you still have the same core problem:
+<strong>You need a boundary between your domain logic and the details of how data is persisted.</strong></p>
+<p>Modern systems benefit from DAOs because:</p>
+<h3 id="1-orms-dont-eliminate-the-need-for-separation-of-concerns">1) ORMs don’t eliminate the need for separation of concerns</h3>
+<p>Business logic should not be calling <code>DbContext</code> directly everywhere.
+If you do that, persistence decisions leak into the entire codebase.</p>
+<p>DAO (or Repository) gives you a stable façade:</p>
+<ul>
+<li>You control what queries exist.</li>
+<li>You provide domain-friendly operations (e.g., <code>GetActiveCustomers()</code>) instead of raw LINQ queries scattered everywhere.</li>
+<li>You avoid coupling domain code to EF Core’s API.</li>
+</ul>
+<h3 id="2-testability-still-requires-abstraction">2) Testability still requires abstraction</h3>
+<p>If services depend on <code>DbContext</code>, unit tests require in-memory EF Core or a test DB.
+If services depend on <code>ICustomerDao</code> (or <code>ICustomerRepository</code>), unit tests run with simple in-memory fakes/mocks.</p>
+<p>Fakes are much simpler than EF Core mocks.</p>
+<h3 id="3-you-gain-freedom-to-evolve-persistence">3) You gain freedom to evolve persistence</h3>
+<p>Your schema and ORM choice will change over time.
+DAO isolates that churn.</p>
+<p>It lets you:</p>
+<ul>
+<li>move from EF to Dapper for performance-heavy queries</li>
+<li>combine multiple data sources behind a single domain operation</li>
+<li>introduce caching layers transparently</li>
+</ul>
+<h3 id="4-dao-is-cheap-to-implement">4) DAO is cheap to implement</h3>
+<p>A small interface per aggregate root and a class wrapping ORM queries is minimal work and adds real clarity.</p>
+<hr>
+<h1 id="when-dao-is-very-useful-in-modern-aspnet-core-systems">When DAO is <em>very</em> useful in modern ASP.NET Core systems</h1>
+<ul>
+<li>medium/large systems with multiple teams</li>
+<li>systems that need clean layers (API → domain → persistence)</li>
+<li>systems that may change persistence strategies (e.g., SQL + Redis + search engine)</li>
+<li>systems with complex domain logic where queries must be curated</li>
+<li>high testability requirements</li>
+</ul>
+<hr>
+<h1 id="when-dao-may-feel-unnecessary">When DAO may feel unnecessary</h1>
+<p>DAO might be overkill if:</p>
+<ul>
+<li>the entire application is a small CRUD web app</li>
+<li>domain logic is extremely thin</li>
+<li>the persistence mechanism is unlikely to change</li>
+<li>you’re comfortable with business logic living directly in EF Core LINQ</li>
+</ul>
+<p>In those cases, using <code>DbContext</code> directly is fine.</p>
+<hr>
+<h1 id="how-dao-evolves-with-modern-orms">How DAO evolves with modern ORMs</h1>
+<p>In older days, DAOs were very SQL-heavy.
+In modern practice:</p>
+<ul>
+<li>
+<p>With <strong>EF Core</strong>, DAO often becomes a thin wrapper:</p>
+<pre class="hljs"><code><div><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title">CustomerDao</span> : <span class="hljs-title">ICustomerDao</span>
+{
+    <span class="hljs-keyword">private</span> <span class="hljs-keyword">readonly</span> AppDbContext _db;
+
+    <span class="hljs-keyword">public</span> Task&lt;Customer?&gt; GetByEmailAsync(<span class="hljs-keyword">string</span> email)
+        =&gt; _db.Customers.SingleOrDefaultAsync(c =&gt; c.Email == email);
+
+    <span class="hljs-function"><span class="hljs-keyword">public</span> Task <span class="hljs-title">AddAsync</span>(<span class="hljs-params">Customer c</span>)</span>
+        =&gt; _db.Customers.AddAsync(c).AsTask();
+}
+</div></code></pre>
+<p>It hides EF details and ensures services do not perform ad-hoc queries.</p>
+</li>
+<li>
+<p>With <strong>Dapper</strong>, DAO becomes a place to centralize SQL.</p>
+</li>
+<li>
+<p>With <strong>microservices</strong>, DAO is often called a <strong>Repository</strong>, but the role is the same.</p>
+</li>
+</ul>
+<p>The pattern survives because the underlying need — a stable persistence boundary — survives.</p>
+<hr>
+<h1 id="practical-guidance-what-experienced-teams-do">Practical guidance (what experienced teams do)</h1>
+<h3 id="keep-daos-small">Keep DAOs small</h3>
+<p>1–3 domain operations per DAO is typical.</p>
+<h3 id="avoid-over-abstracting-the-orm">Avoid over-abstracting the ORM</h3>
+<p>You don’t need a generic <code>IRepository&lt;T&gt;</code> — it hides your intent.
+Use explicit DAO interfaces per entity/aggregate.</p>
+<h3 id="let-services-own-business-logic">Let services own business logic</h3>
+<p>DAOs should not validate rules, check invariants, or calculate state transitions.</p>
+<h3 id="prefer-returning-domain-models">Prefer returning domain models</h3>
+<p>Avoid leaking ORM-specific entities.</p>
+<hr>
+<h1 id="short-answer">Short answer</h1>
+<p><strong>Yes, DAO is still relevant.</strong>
+Frameworks and ORMs automate persistence, but they don’t remove the need for a clean boundary, stable domain API, improved testability, and architectural flexibility. The pattern remains a valuable tool—simpler in some apps, more important in others.</p>
+<hr>
+<p><strong>NOTE:</strong> This page is generated with assistance from AI tools.</p>
+
+</body>
+</html>

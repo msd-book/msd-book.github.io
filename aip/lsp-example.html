@@ -1,0 +1,614 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>The MSD Book :: LSP Example</title>
+<meta http-equiv="Content-type" content="text/html;charset=UTF-8">
+
+<style>
+/* https://github.com/microsoft/vscode/blob/master/extensions/markdown-language-features/media/markdown.css */
+/*---------------------------------------------------------------------------------------------
+ *  Copyright (c) Microsoft Corporation. All rights reserved.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
+ *--------------------------------------------------------------------------------------------*/
+
+body {
+	font-family: var(--vscode-markdown-font-family, -apple-system, BlinkMacSystemFont, "Segoe WPC", "Segoe UI", "Ubuntu", "Droid Sans", sans-serif);
+	font-size: var(--vscode-markdown-font-size, 14px);
+	padding: 0 26px;
+	line-height: var(--vscode-markdown-line-height, 22px);
+	word-wrap: break-word;
+}
+
+#code-csp-warning {
+	position: fixed;
+	top: 0;
+	right: 0;
+	color: white;
+	margin: 16px;
+	text-align: center;
+	font-size: 12px;
+	font-family: sans-serif;
+	background-color:#444444;
+	cursor: pointer;
+	padding: 6px;
+	box-shadow: 1px 1px 1px rgba(0,0,0,.25);
+}
+
+#code-csp-warning:hover {
+	text-decoration: none;
+	background-color:#007acc;
+	box-shadow: 2px 2px 2px rgba(0,0,0,.25);
+}
+
+body.scrollBeyondLastLine {
+	margin-bottom: calc(100vh - 22px);
+}
+
+body.showEditorSelection .code-line {
+	position: relative;
+}
+
+body.showEditorSelection .code-active-line:before,
+body.showEditorSelection .code-line:hover:before {
+	content: "";
+	display: block;
+	position: absolute;
+	top: 0;
+	left: -12px;
+	height: 100%;
+}
+
+body.showEditorSelection li.code-active-line:before,
+body.showEditorSelection li.code-line:hover:before {
+	left: -30px;
+}
+
+.vscode-light.showEditorSelection .code-active-line:before {
+	border-left: 3px solid rgba(0, 0, 0, 0.15);
+}
+
+.vscode-light.showEditorSelection .code-line:hover:before {
+	border-left: 3px solid rgba(0, 0, 0, 0.40);
+}
+
+.vscode-light.showEditorSelection .code-line .code-line:hover:before {
+	border-left: none;
+}
+
+.vscode-dark.showEditorSelection .code-active-line:before {
+	border-left: 3px solid rgba(255, 255, 255, 0.4);
+}
+
+.vscode-dark.showEditorSelection .code-line:hover:before {
+	border-left: 3px solid rgba(255, 255, 255, 0.60);
+}
+
+.vscode-dark.showEditorSelection .code-line .code-line:hover:before {
+	border-left: none;
+}
+
+.vscode-high-contrast.showEditorSelection .code-active-line:before {
+	border-left: 3px solid rgba(255, 160, 0, 0.7);
+}
+
+.vscode-high-contrast.showEditorSelection .code-line:hover:before {
+	border-left: 3px solid rgba(255, 160, 0, 1);
+}
+
+.vscode-high-contrast.showEditorSelection .code-line .code-line:hover:before {
+	border-left: none;
+}
+
+img {
+	max-width: 100%;
+	max-height: 100%;
+}
+
+a {
+	text-decoration: none;
+}
+
+a:hover {
+	text-decoration: underline;
+}
+
+a:focus,
+input:focus,
+select:focus,
+textarea:focus {
+	outline: 1px solid -webkit-focus-ring-color;
+	outline-offset: -1px;
+}
+
+hr {
+	border: 0;
+	height: 2px;
+	border-bottom: 2px solid;
+}
+
+h1 {
+	padding-bottom: 0.3em;
+	line-height: 1.2;
+	border-bottom-width: 1px;
+	border-bottom-style: solid;
+}
+
+h1, h2, h3 {
+	font-weight: normal;
+}
+
+table {
+	border-collapse: collapse;
+}
+
+table > thead > tr > th {
+	text-align: left;
+	border-bottom: 1px solid;
+}
+
+table > thead > tr > th,
+table > thead > tr > td,
+table > tbody > tr > th,
+table > tbody > tr > td {
+	padding: 5px 10px;
+}
+
+table > tbody > tr + tr > td {
+	border-top: 1px solid;
+}
+
+blockquote {
+	margin: 0 7px 0 5px;
+	padding: 0 16px 0 10px;
+	border-left-width: 5px;
+	border-left-style: solid;
+}
+
+code {
+	font-family: Menlo, Monaco, Consolas, "Droid Sans Mono", "Courier New", monospace, "Droid Sans Fallback";
+	font-size: 1em;
+	line-height: 1.357em;
+}
+
+body.wordWrap pre {
+	white-space: pre-wrap;
+}
+
+pre:not(.hljs),
+pre.hljs code > div {
+	padding: 16px;
+	border-radius: 3px;
+	overflow: auto;
+}
+
+pre code {
+	color: var(--vscode-editor-foreground);
+	tab-size: 4;
+}
+
+/** Theming */
+
+.vscode-light pre {
+	background-color: rgba(220, 220, 220, 0.4);
+}
+
+.vscode-dark pre {
+	background-color: rgba(10, 10, 10, 0.4);
+}
+
+.vscode-high-contrast pre {
+	background-color: rgb(0, 0, 0);
+}
+
+.vscode-high-contrast h1 {
+	border-color: rgb(0, 0, 0);
+}
+
+.vscode-light table > thead > tr > th {
+	border-color: rgba(0, 0, 0, 0.69);
+}
+
+.vscode-dark table > thead > tr > th {
+	border-color: rgba(255, 255, 255, 0.69);
+}
+
+.vscode-light h1,
+.vscode-light hr,
+.vscode-light table > tbody > tr + tr > td {
+	border-color: rgba(0, 0, 0, 0.18);
+}
+
+.vscode-dark h1,
+.vscode-dark hr,
+.vscode-dark table > tbody > tr + tr > td {
+	border-color: rgba(255, 255, 255, 0.18);
+}
+
+</style>
+
+<style>
+/* Tomorrow Theme */
+/* http://jmblog.github.com/color-themes-for-google-code-highlightjs */
+/* Original theme - https://github.com/chriskempson/tomorrow-theme */
+
+/* Tomorrow Comment */
+.hljs-comment,
+.hljs-quote {
+	color: #8e908c;
+}
+
+/* Tomorrow Red */
+.hljs-variable,
+.hljs-template-variable,
+.hljs-tag,
+.hljs-name,
+.hljs-selector-id,
+.hljs-selector-class,
+.hljs-regexp,
+.hljs-deletion {
+	color: #c82829;
+}
+
+/* Tomorrow Orange */
+.hljs-number,
+.hljs-built_in,
+.hljs-builtin-name,
+.hljs-literal,
+.hljs-type,
+.hljs-params,
+.hljs-meta,
+.hljs-link {
+	color: #f5871f;
+}
+
+/* Tomorrow Yellow */
+.hljs-attribute {
+	color: #eab700;
+}
+
+/* Tomorrow Green */
+.hljs-string,
+.hljs-symbol,
+.hljs-bullet,
+.hljs-addition {
+	color: #718c00;
+}
+
+/* Tomorrow Blue */
+.hljs-title,
+.hljs-section {
+	color: #4271ae;
+}
+
+/* Tomorrow Purple */
+.hljs-keyword,
+.hljs-selector-tag {
+	color: #8959a8;
+}
+
+.hljs {
+	display: block;
+	overflow-x: auto;
+	color: #4d4d4c;
+	padding: 0.5em;
+}
+
+.hljs-emphasis {
+	font-style: italic;
+}
+
+.hljs-strong {
+	font-weight: bold;
+}
+</style>
+
+<style>
+/*
+ * Markdown PDF CSS
+ */
+
+ body {
+	font-family: -apple-system, BlinkMacSystemFont, "Segoe WPC", "Segoe UI", "Ubuntu", "Droid Sans", sans-serif, "Meiryo";
+	padding: 0 12px;
+}
+
+pre {
+	background-color: #f8f8f8;
+	border: 1px solid #cccccc;
+	border-radius: 3px;
+	overflow-x: auto;
+	white-space: pre-wrap;
+	overflow-wrap: break-word;
+}
+
+pre:not(.hljs) {
+	padding: 23px;
+	line-height: 19px;
+}
+
+blockquote {
+	background: rgba(127, 127, 127, 0.1);
+	border-color: rgba(0, 122, 204, 0.5);
+}
+
+.emoji {
+	height: 1.4em;
+}
+
+code {
+	font-size: 14px;
+	line-height: 19px;
+}
+
+/* for inline code */
+:not(pre):not(.hljs) > code {
+	color: #C9AE75; /* Change the old color so it seems less like an error */
+	font-size: inherit;
+}
+
+/* Page Break : use <div class="page"/> to insert page break
+-------------------------------------------------------- */
+.page {
+	page-break-after: always;
+}
+
+</style>
+
+<script src="https://unpkg.com/mermaid/dist/mermaid.min.js"></script>
+</head>
+<body>
+  <script>
+    mermaid.initialize({
+      startOnLoad: true,
+      theme: document.body.classList.contains('vscode-dark') || document.body.classList.contains('vscode-high-contrast')
+          ? 'dark'
+          : 'default'
+    });
+  </script>
+<h1 id="deep-dive-liskov-substitution-principle-lsp--why-where-and-how">Deep dive: Liskov Substitution Principle (LSP) — why, where, and how</h1>
+<p>
+	<img src="msd-book-front.png" 
+    alt="The MSD Book" width="200" style="float: left; margin: 0 1rem 1rem 0;"/>
+	Short version: <strong>LSP says a subtype must be usable wherever its supertype is expected without surprising the caller.</strong> Practically, that means subclasses must preserve the <em>behavioral contract</em> (preconditions, postconditions, invariants) of their parent types.</p>
+<p>If that fails, polymorphism breaks: code that works with the base type will behave incorrectly with the subtype.</p>
+<hr>
+<h1 id="why-lsp-matters-practical-consequences">Why LSP matters (practical consequences)</h1>
+<ul>
+<li><strong>Predictability:</strong> Callers rely on the contract of the base type. Violations cause subtle bugs.</li>
+<li><strong>Testability:</strong> Tests for the base type should pass for any subtype. If they don't, your tests are lying.</li>
+<li><strong>Extensibility:</strong> Proper subtyping lets you add new implementations without changing client code.</li>
+<li><strong>API stability:</strong> Public base types define expectations for downstream users — breaking them is an API bug.</li>
+</ul>
+<hr>
+<h1 id="where-lsp-commonly-fails-in-real-systems">Where LSP commonly fails in real systems</h1>
+<ul>
+<li>Mutable state and overridden setters (classic Rectangle/Square).</li>
+<li>Strengthening preconditions in subclasses (e.g., subclass requires extra non-nullness).</li>
+<li>Weakening postconditions (returns less than promised).</li>
+<li>Changing exception behavior (throwing new unchecked exceptions the base didn't promise).</li>
+<li>Violating invariants (e.g., allowed ranges change).</li>
+<li>Using inheritance for code reuse rather than subtype/semantic compatibility.</li>
+</ul>
+<p>In modern systems, watch for LSP issues in:</p>
+<ul>
+<li>SDKs / public libraries</li>
+<li>Microservice contracts (if a service returns different shapes for polymorphic types)</li>
+<li>Domain models (ORM entities, value objects)</li>
+<li>UI component hierarchies (assumptions about lifecycle/props)</li>
+<li>Concurrent or actor-based code where substitutability implies thread-safety guarantees</li>
+</ul>
+<hr>
+<h1 id="exact-rules-to-keep-in-mind-contract-style">Exact rules to keep in mind (contract-style)</h1>
+<ol>
+<li><strong>Signatures:</strong> Method signatures must remain compatible (types, arity).</li>
+<li><strong>Preconditions cannot be strengthened</strong> in a subtype. If base accepts <code>x</code>, subtype must accept at least all those <code>x</code>.</li>
+<li><strong>Postconditions cannot be weakened.</strong> If base guarantees <code>y</code>, subtype must guarantee <code>y</code>.</li>
+<li><strong>Invariants of supertype must hold</strong> for subtype objects.</li>
+<li><strong>No surprising side effects</strong> — resource/visibility/exception semantics should remain compatible.</li>
+<li><strong>History constraint:</strong> Subtype must not allow changes that break the external history expected by clients (e.g., mutating previously immutable contract).</li>
+</ol>
+<hr>
+<h1 id="real-classmodule-example--classic-rectangle--square">Real class/module example — classic Rectangle / Square</h1>
+<p>We'll use Java for clarity (static types show intent), but the idea applies everywhere.</p>
+<h3 id="before--lsp-violation">Before — LSP violation</h3>
+<pre class="hljs"><code><div><span class="hljs-comment">// Base type</span>
+<span class="hljs-keyword">public</span> <span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">Rectangle</span> </span>{
+    <span class="hljs-keyword">protected</span> <span class="hljs-keyword">int</span> width;
+    <span class="hljs-keyword">protected</span> <span class="hljs-keyword">int</span> height;
+
+    <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-title">Rectangle</span><span class="hljs-params">(<span class="hljs-keyword">int</span> w, <span class="hljs-keyword">int</span> h)</span> </span>{
+        <span class="hljs-keyword">this</span>.width = w;
+        <span class="hljs-keyword">this</span>.height = h;
+    }
+
+    <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title">setWidth</span><span class="hljs-params">(<span class="hljs-keyword">int</span> w)</span> </span>{ <span class="hljs-keyword">this</span>.width = w; }
+    <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title">setHeight</span><span class="hljs-params">(<span class="hljs-keyword">int</span> h)</span> </span>{ <span class="hljs-keyword">this</span>.height = h; }
+
+    <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">int</span> <span class="hljs-title">getWidth</span><span class="hljs-params">()</span> </span>{ <span class="hljs-keyword">return</span> width; }
+    <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">int</span> <span class="hljs-title">getHeight</span><span class="hljs-params">()</span> </span>{ <span class="hljs-keyword">return</span> height; }
+
+    <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">int</span> <span class="hljs-title">area</span><span class="hljs-params">()</span> </span>{ <span class="hljs-keyword">return</span> width * height; }
+}
+
+<span class="hljs-comment">// Subclass attempting to reuse Rectangle behaviour</span>
+<span class="hljs-keyword">public</span> <span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">Square</span> <span class="hljs-keyword">extends</span> <span class="hljs-title">Rectangle</span> </span>{
+    <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-title">Square</span><span class="hljs-params">(<span class="hljs-keyword">int</span> side)</span> </span>{
+        <span class="hljs-keyword">super</span>(side, side);
+    }
+
+    <span class="hljs-meta">@Override</span>
+    <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title">setWidth</span><span class="hljs-params">(<span class="hljs-keyword">int</span> w)</span> </span>{
+        <span class="hljs-keyword">this</span>.width = w;
+        <span class="hljs-keyword">this</span>.height = w;   <span class="hljs-comment">// keeps square invariant</span>
+    }
+
+    <span class="hljs-meta">@Override</span>
+    <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title">setHeight</span><span class="hljs-params">(<span class="hljs-keyword">int</span> h)</span> </span>{
+        <span class="hljs-keyword">this</span>.width = h;
+        <span class="hljs-keyword">this</span>.height = h;   <span class="hljs-comment">// keeps square invariant</span>
+    }
+}
+</div></code></pre>
+<p>Client code expecting a <code>Rectangle</code>:</p>
+<pre class="hljs"><code><div><span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">void</span> <span class="hljs-title">resizeAndCheck</span><span class="hljs-params">(Rectangle r)</span> </span>{
+    r.setWidth(<span class="hljs-number">5</span>);
+    r.setHeight(<span class="hljs-number">10</span>);
+    <span class="hljs-comment">// Expect area == 50 for a rectangle with width=5 height=10</span>
+    System.out.println(<span class="hljs-string">"area = "</span> + r.area());
+}
+</div></code></pre>
+<p>If you pass a <code>Square</code> into <code>resizeAndCheck</code>, after <code>setWidth(5)</code> and <code>setHeight(10)</code> the <code>Square</code> will end up as <code>width=10,height=10</code> (area=100). The client expected <code>area==50</code>. <strong>Violation of LSP.</strong></p>
+<hr>
+<h1 id="after--lsp-focused-refactor-options">After — LSP-focused refactor options</h1>
+<p>There are multiple valid ways to fix this depending on needs. Two common approaches:</p>
+<h3 id="option-a--prefer-composition-or-sibling-types-over-inheritance">Option A — Prefer <em>composition or sibling types</em> over inheritance</h3>
+<p>Make <code>Shape</code> interface and implement <code>Rectangle</code> and <code>Square</code> separately. Don't have <code>Square</code> extend <code>Rectangle</code>.</p>
+<pre class="hljs"><code><div><span class="hljs-comment">// Contract: Shape focuses on behavior clients actually need</span>
+<span class="hljs-keyword">public</span> <span class="hljs-class"><span class="hljs-keyword">interface</span> <span class="hljs-title">Shape</span> </span>{
+    <span class="hljs-function"><span class="hljs-keyword">int</span> <span class="hljs-title">area</span><span class="hljs-params">()</span></span>;
+}
+
+<span class="hljs-comment">// Rectangle is its own class</span>
+<span class="hljs-keyword">public</span> <span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">Rectangle</span> <span class="hljs-keyword">implements</span> <span class="hljs-title">Shape</span> </span>{
+    <span class="hljs-keyword">private</span> <span class="hljs-keyword">final</span> <span class="hljs-keyword">int</span> width;
+    <span class="hljs-keyword">private</span> <span class="hljs-keyword">final</span> <span class="hljs-keyword">int</span> height;
+
+    <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-title">Rectangle</span><span class="hljs-params">(<span class="hljs-keyword">int</span> width, <span class="hljs-keyword">int</span> height)</span> </span>{
+        <span class="hljs-keyword">this</span>.width = width;
+        <span class="hljs-keyword">this</span>.height = height;
+    }
+    <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">int</span> <span class="hljs-title">getWidth</span><span class="hljs-params">()</span> </span>{ <span class="hljs-keyword">return</span> width; }
+    <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">int</span> <span class="hljs-title">getHeight</span><span class="hljs-params">()</span> </span>{ <span class="hljs-keyword">return</span> height; }
+    <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">int</span> <span class="hljs-title">area</span><span class="hljs-params">()</span> </span>{ <span class="hljs-keyword">return</span> width * height; }
+}
+
+<span class="hljs-comment">// Square is also its own class, but not a Rectangle</span>
+<span class="hljs-keyword">public</span> <span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">Square</span> <span class="hljs-keyword">implements</span> <span class="hljs-title">Shape</span> </span>{
+    <span class="hljs-keyword">private</span> <span class="hljs-keyword">final</span> <span class="hljs-keyword">int</span> side;
+
+    <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-title">Square</span><span class="hljs-params">(<span class="hljs-keyword">int</span> side)</span> </span>{
+        <span class="hljs-keyword">this</span>.side = side;
+    }
+    <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">int</span> <span class="hljs-title">getSide</span><span class="hljs-params">()</span> </span>{ <span class="hljs-keyword">return</span> side; }
+    <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">int</span> <span class="hljs-title">area</span><span class="hljs-params">()</span> </span>{ <span class="hljs-keyword">return</span> side * side; }
+}
+</div></code></pre>
+<p>Client code uses <code>Shape</code>:</p>
+<pre class="hljs"><code><div><span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">void</span> <span class="hljs-title">printArea</span><span class="hljs-params">(Shape s)</span> </span>{
+    System.out.println(<span class="hljs-string">"area = "</span> + s.area());
+}
+</div></code></pre>
+<p>Now substitutability is semantic: anything implementing <code>Shape</code> can be used. There's no swapped setter semantics because there are no setters.</p>
+<p><strong>When to use:</strong> When the conceptual contract differs or when mutability semantics differ between types.</p>
+<hr>
+<h3 id="option-b--preserve-behavioral-contract-in-subtype-immutable-or-consistent-setters">Option B — Preserve behavioral contract in subtype (immutable or consistent setters)</h3>
+<p>If inheritance is needed, ensure subclass preserves <em>all</em> behavioral expectations: either make parent immutable or design setters so subclasses cannot break the contract.</p>
+<p>Make <code>Rectangle</code> immutable or finalize setter behavior:</p>
+<pre class="hljs"><code><div><span class="hljs-keyword">public</span> <span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">Rectangle</span> </span>{
+    <span class="hljs-keyword">private</span> <span class="hljs-keyword">int</span> width;
+    <span class="hljs-keyword">private</span> <span class="hljs-keyword">int</span> height;
+
+    <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-title">Rectangle</span><span class="hljs-params">(<span class="hljs-keyword">int</span> w, <span class="hljs-keyword">int</span> h)</span> </span>{ <span class="hljs-keyword">this</span>.width = w; <span class="hljs-keyword">this</span>.height = h; }
+
+    <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title">setSize</span><span class="hljs-params">(<span class="hljs-keyword">int</span> w, <span class="hljs-keyword">int</span> h)</span> </span>{
+        <span class="hljs-keyword">this</span>.width = w;
+        <span class="hljs-keyword">this</span>.height = h;
+    }
+
+    <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">int</span> <span class="hljs-title">getWidth</span><span class="hljs-params">()</span> </span>{ <span class="hljs-keyword">return</span> width; }
+    <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">int</span> <span class="hljs-title">getHeight</span><span class="hljs-params">()</span> </span>{ <span class="hljs-keyword">return</span> height; }
+    <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">int</span> <span class="hljs-title">area</span><span class="hljs-params">()</span> </span>{ <span class="hljs-keyword">return</span> width * height; }
+}
+
+<span class="hljs-comment">// If Square must extend Rectangle, it must not change semantics of setSize</span>
+<span class="hljs-keyword">public</span> <span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">Square</span> <span class="hljs-keyword">extends</span> <span class="hljs-title">Rectangle</span> </span>{
+    <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-title">Square</span><span class="hljs-params">(<span class="hljs-keyword">int</span> side)</span> </span>{ <span class="hljs-keyword">super</span>(side, side); }
+
+    <span class="hljs-meta">@Override</span>
+    <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title">setSize</span><span class="hljs-params">(<span class="hljs-keyword">int</span> w, <span class="hljs-keyword">int</span> h)</span> </span>{
+        <span class="hljs-keyword">if</span> (w != h) <span class="hljs-keyword">throw</span> <span class="hljs-keyword">new</span> IllegalArgumentException(<span class="hljs-string">"Square requires equal sides"</span>);
+        <span class="hljs-keyword">super</span>.setSize(w, h);
+    }
+}
+</div></code></pre>
+<p>This <em>still</em> can be problematic (now the subtype strengthens a precondition by rejecting <code>w != h</code>) — <strong>that is</strong> LSP-unsafe because callers of <code>Rectangle.setSize</code> may assume it never throws for valid inputs. So the safe approach is: <strong>do not strengthen preconditions</strong>. Better: avoid using inheritance here.</p>
+<p><strong>Conclusion:</strong> When the semantic contract differs, prefer interfaces/siblings or composition.</p>
+<hr>
+<h1 id="concrete-test-that-exposes-the-bug-unit-test">Concrete test that exposes the bug (unit test)</h1>
+<pre class="hljs"><code><div><span class="hljs-meta">@Test</span>
+<span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title">testResizeRectangle</span><span class="hljs-params">()</span> </span>{
+    Rectangle r = <span class="hljs-keyword">new</span> Rectangle(<span class="hljs-number">2</span>, <span class="hljs-number">3</span>);
+    r.setWidth(<span class="hljs-number">5</span>);
+    r.setHeight(<span class="hljs-number">10</span>);
+    assertEquals(<span class="hljs-number">50</span>, r.area());  <span class="hljs-comment">// passes</span>
+}
+
+<span class="hljs-meta">@Test</span>
+<span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title">testResizeSquareAsRectangle</span><span class="hljs-params">()</span> </span>{
+    Rectangle s = <span class="hljs-keyword">new</span> Square(<span class="hljs-number">2</span>);
+    s.setWidth(<span class="hljs-number">5</span>);
+    s.setHeight(<span class="hljs-number">10</span>);
+    <span class="hljs-comment">// This would fail if Square overrides setters to maintain square invariant.</span>
+    assertEquals(<span class="hljs-number">50</span>, s.area()); <span class="hljs-comment">// fails for the broken Square</span>
+}
+</div></code></pre>
+<p>If second test fails, your subtype is not substitutable.</p>
+<hr>
+<h1 id="practical-lsp-guidelines-for-modern-codebases">Practical LSP guidelines for modern codebases</h1>
+<ul>
+<li><strong>Prefer composition over inheritance</strong> when the subclass would need to change base behavior.</li>
+<li><strong>Design narrow interfaces.</strong> Clients should depend only on the minimum contract they need.</li>
+<li><strong>Immutability simplifies LSP.</strong> Immutable base types remove many invariants issues.</li>
+<li><strong>Be explicit about contracts in docs and types.</strong> Document preconditions, postconditions, and side effects.</li>
+<li><strong>Use final classes or sealed hierarchies</strong> when you need to control subclassing (Java <code>final</code>, <code>sealed</code>, or equivalent).</li>
+<li><strong>Avoid overriding methods that change behavior/side-effects</strong> (especially setters).</li>
+<li><strong>Prefer factories that return interfaces</strong> rather than concrete base classes if implementations may vary.</li>
+<li><strong>Property-based tests</strong> (QuickCheck-style) help detect substitution anomalies: run the same property tests for each implementation.</li>
+</ul>
+<hr>
+<h1 id="lsp-focused-refactor-recipe-step-by-step">LSP-focused refactor recipe (step-by-step)</h1>
+<ol>
+<li><strong>Identify the contract:</strong> list the behavioral guarantees (pre/post/invariants) of the base type.</li>
+<li><strong>Run base-type tests against each subtype.</strong> If they fail, you have an LSP problem.</li>
+<li><strong>Decide semantics:</strong> Should subtype truly be a subtype (same semantics) or only share implementation?</li>
+<li><strong>If semantics differ:</strong> refactor into separate implementations behind a common interface (composition).</li>
+<li><strong>If semantics are same:</strong> enforce contract in subtype (but be cautious not to strengthen preconditions).</li>
+<li><strong>Make invariants explicit:</strong> private fields, immutable where possible.</li>
+<li><strong>Add tests that exercise substitution:</strong> run base-type test-suite against each implementation.</li>
+<li><strong>Document contracts in code (javadoc/types, assertions).</strong></li>
+</ol>
+<hr>
+<h1 id="short-lint-style-checklist-for-code-reviews-add-to-pr-template">Short lint-style checklist for code reviews (add to PR template)</h1>
+<ul>
+<li><input type="checkbox" id="checkbox0"><label for="checkbox0"></label><strong>Contract documented:</strong> Are preconditions/postconditions/invariants of the base type documented?</li>
+<li><input type="checkbox" id="checkbox1"><label for="checkbox1"></label><strong>Behavioral substitution:</strong> Can an instance of the subtype be used anywhere the base type is used without changing observable behavior?</li>
+<li><input type="checkbox" id="checkbox2"><label for="checkbox2"></label><strong>No strengthened preconditions:</strong> Does the subtype require stricter inputs than the base type?</li>
+<li><input type="checkbox" id="checkbox3"><label for="checkbox3"></label><strong>No weakened postconditions:</strong> Does the subtype still guarantee what callers expect from the base type?</li>
+<li><input type="checkbox" id="checkbox4"><label for="checkbox4"></label><strong>No hidden exceptions:</strong> Does the subtype introduce new unchecked exceptions or change exception semantics for existing methods?</li>
+<li><input type="checkbox" id="checkbox5"><label for="checkbox5"></label><strong>Mutability match:</strong> Does the subtype preserve mutability/immutability expectations of the base?</li>
+<li><input type="checkbox" id="checkbox6"><label for="checkbox6"></label><strong>Tests run polymorphically:</strong> Are base-type tests executed against the subtype implementation?</li>
+<li><input type="checkbox" id="checkbox7"><label for="checkbox7"></label><strong>Prefer composition:</strong> If behavior differs, did the author consider composition or separate implementations instead of inheritance?</li>
+<li><input type="checkbox" id="checkbox8"><label for="checkbox8"></label><strong>Final / sealed / restricted inheritance:</strong> Is inheritance intentionally allowed and controlled (use <code>final</code>, <code>sealed</code>, or restrict constructors)?</li>
+<li><input type="checkbox" id="checkbox9"><label for="checkbox9"></label><strong>No state invariant leaks:</strong> Does subclass maintain base invariants (no internal state that violates base assumptions)?</li>
+</ul>
+<hr>
+<h1 id="quick-heuristics--red-flags-during-review">Quick heuristics — red flags during review</h1>
+<ul>
+<li>Overriding setters and changing state semantics.</li>
+<li>Throwing exceptions where base never did.</li>
+<li>Overriding a method that callers assume is side-effect-free to add side-effects.</li>
+<li>Public or protected fields that subclasses mutate in incompatible ways.</li>
+<li>Subclass violates documented complexity/performance guarantees used by clients.</li>
+</ul>
+<hr>
+<h1 id="closing-example-summary">Closing example (summary)</h1>
+<ul>
+<li><strong>Bad:</strong> <code>Square extends Rectangle</code> with different setter semantics — breaks LSP.</li>
+<li><strong>Good:</strong> <code>Shape</code> interface with <code>Rectangle</code> and <code>Square</code> as independent implementations — keeps substitution safe for the operations the client needs (e.g., <code>area()</code>).</li>
+<li><strong>Rule of thumb:</strong> If a subclass must change the behavior of base methods to preserve its own invariants, it's probably not a proper subtype — refactor.</li>
+</ul>
+<hr>
+<p><strong>NOTE:</strong> This page is generated with assistance from AI tools.</p>
+
+</body>
+</html>

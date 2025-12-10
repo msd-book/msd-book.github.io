@@ -1,0 +1,739 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>The MSD Book :: Adapter Pattern</title>
+<meta http-equiv="Content-type" content="text/html;charset=UTF-8">
+
+<style>
+
+body {
+	font-family: var(--vscode-markdown-font-family, -apple-system, BlinkMacSystemFont, "Segoe WPC", "Segoe UI", "Ubuntu", "Droid Sans", sans-serif);
+	font-size: var(--vscode-markdown-font-size, 14px);
+	padding: 0 26px;
+	line-height: var(--vscode-markdown-line-height, 22px);
+	word-wrap: break-word;
+}
+
+#code-csp-warning {
+	position: fixed;
+	top: 0;
+	right: 0;
+	color: white;
+	margin: 16px;
+	text-align: center;
+	font-size: 12px;
+	font-family: sans-serif;
+	background-color:#444444;
+	cursor: pointer;
+	padding: 6px;
+	box-shadow: 1px 1px 1px rgba(0,0,0,.25);
+}
+
+#code-csp-warning:hover {
+	text-decoration: none;
+	background-color:#007acc;
+	box-shadow: 2px 2px 2px rgba(0,0,0,.25);
+}
+
+body.scrollBeyondLastLine {
+	margin-bottom: calc(100vh - 22px);
+}
+
+body.showEditorSelection .code-line {
+	position: relative;
+}
+
+body.showEditorSelection .code-active-line:before,
+body.showEditorSelection .code-line:hover:before {
+	content: "";
+	display: block;
+	position: absolute;
+	top: 0;
+	left: -12px;
+	height: 100%;
+}
+
+body.showEditorSelection li.code-active-line:before,
+body.showEditorSelection li.code-line:hover:before {
+	left: -30px;
+}
+
+.vscode-light.showEditorSelection .code-active-line:before {
+	border-left: 3px solid rgba(0, 0, 0, 0.15);
+}
+
+.vscode-light.showEditorSelection .code-line:hover:before {
+	border-left: 3px solid rgba(0, 0, 0, 0.40);
+}
+
+.vscode-light.showEditorSelection .code-line .code-line:hover:before {
+	border-left: none;
+}
+
+.vscode-dark.showEditorSelection .code-active-line:before {
+	border-left: 3px solid rgba(255, 255, 255, 0.4);
+}
+
+.vscode-dark.showEditorSelection .code-line:hover:before {
+	border-left: 3px solid rgba(255, 255, 255, 0.60);
+}
+
+.vscode-dark.showEditorSelection .code-line .code-line:hover:before {
+	border-left: none;
+}
+
+.vscode-high-contrast.showEditorSelection .code-active-line:before {
+	border-left: 3px solid rgba(255, 160, 0, 0.7);
+}
+
+.vscode-high-contrast.showEditorSelection .code-line:hover:before {
+	border-left: 3px solid rgba(255, 160, 0, 1);
+}
+
+.vscode-high-contrast.showEditorSelection .code-line .code-line:hover:before {
+	border-left: none;
+}
+
+img {
+	max-width: 100%;
+	max-height: 100%;
+}
+
+a {
+	text-decoration: none;
+}
+
+a:hover {
+	text-decoration: underline;
+}
+
+a:focus,
+input:focus,
+select:focus,
+textarea:focus {
+	outline: 1px solid -webkit-focus-ring-color;
+	outline-offset: -1px;
+}
+
+hr {
+	border: 0;
+	height: 2px;
+	border-bottom: 2px solid;
+}
+
+h1 {
+	padding-bottom: 0.3em;
+	line-height: 1.2;
+	border-bottom-width: 1px;
+	border-bottom-style: solid;
+}
+
+h1, h2, h3 {
+	font-weight: normal;
+}
+
+table {
+	border-collapse: collapse;
+}
+
+table > thead > tr > th {
+	text-align: left;
+	border-bottom: 1px solid;
+}
+
+table > thead > tr > th,
+table > thead > tr > td,
+table > tbody > tr > th,
+table > tbody > tr > td {
+	padding: 5px 10px;
+}
+
+table > tbody > tr + tr > td {
+	border-top: 1px solid;
+}
+
+blockquote {
+	margin: 0 7px 0 5px;
+	padding: 0 16px 0 10px;
+	border-left-width: 5px;
+	border-left-style: solid;
+}
+
+code {
+	font-family: Menlo, Monaco, Consolas, "Droid Sans Mono", "Courier New", monospace, "Droid Sans Fallback";
+	font-size: 1em;
+	line-height: 1.357em;
+}
+
+body.wordWrap pre {
+	white-space: pre-wrap;
+}
+
+pre:not(.hljs),
+pre.hljs code > div {
+	padding: 16px;
+	border-radius: 3px;
+	overflow: auto;
+}
+
+pre code {
+	color: var(--vscode-editor-foreground);
+	tab-size: 4;
+}
+
+/** Theming */
+
+.vscode-light pre {
+	background-color: rgba(220, 220, 220, 0.4);
+}
+
+.vscode-dark pre {
+	background-color: rgba(10, 10, 10, 0.4);
+}
+
+.vscode-high-contrast pre {
+	background-color: rgb(0, 0, 0);
+}
+
+.vscode-high-contrast h1 {
+	border-color: rgb(0, 0, 0);
+}
+
+.vscode-light table > thead > tr > th {
+	border-color: rgba(0, 0, 0, 0.69);
+}
+
+.vscode-dark table > thead > tr > th {
+	border-color: rgba(255, 255, 255, 0.69);
+}
+
+.vscode-light h1,
+.vscode-light hr,
+.vscode-light table > tbody > tr + tr > td {
+	border-color: rgba(0, 0, 0, 0.18);
+}
+
+.vscode-dark h1,
+.vscode-dark hr,
+.vscode-dark table > tbody > tr + tr > td {
+	border-color: rgba(255, 255, 255, 0.18);
+}
+
+</style>
+
+<style>
+/* Tomorrow Theme */
+/* http://jmblog.github.com/color-themes-for-google-code-highlightjs */
+/* Original theme - https://github.com/chriskempson/tomorrow-theme */
+
+/* Tomorrow Comment */
+.hljs-comment,
+.hljs-quote {
+	color: #8e908c;
+}
+
+/* Tomorrow Red */
+.hljs-variable,
+.hljs-template-variable,
+.hljs-tag,
+.hljs-name,
+.hljs-selector-id,
+.hljs-selector-class,
+.hljs-regexp,
+.hljs-deletion {
+	color: #c82829;
+}
+
+/* Tomorrow Orange */
+.hljs-number,
+.hljs-built_in,
+.hljs-builtin-name,
+.hljs-literal,
+.hljs-type,
+.hljs-params,
+.hljs-meta,
+.hljs-link {
+	color: #f5871f;
+}
+
+/* Tomorrow Yellow */
+.hljs-attribute {
+	color: #eab700;
+}
+
+/* Tomorrow Green */
+.hljs-string,
+.hljs-symbol,
+.hljs-bullet,
+.hljs-addition {
+	color: #718c00;
+}
+
+/* Tomorrow Blue */
+.hljs-title,
+.hljs-section {
+	color: #4271ae;
+}
+
+/* Tomorrow Purple */
+.hljs-keyword,
+.hljs-selector-tag {
+	color: #8959a8;
+}
+
+.hljs {
+	display: block;
+	overflow-x: auto;
+	color: #4d4d4c;
+	padding: 0.5em;
+}
+
+.hljs-emphasis {
+	font-style: italic;
+}
+
+.hljs-strong {
+	font-weight: bold;
+}
+</style>
+
+<style>
+/*
+ * Markdown PDF CSS
+ */
+
+ body {
+	font-family: -apple-system, BlinkMacSystemFont, "Segoe WPC", "Segoe UI", "Ubuntu", "Droid Sans", sans-serif, "Meiryo";
+	padding: 0 12px;
+}
+
+pre {
+	background-color: #f8f8f8;
+	border: 1px solid #cccccc;
+	border-radius: 3px;
+	overflow-x: auto;
+	white-space: pre-wrap;
+	overflow-wrap: break-word;
+}
+
+pre:not(.hljs) {
+	padding: 23px;
+	line-height: 19px;
+}
+
+blockquote {
+	background: rgba(127, 127, 127, 0.1);
+	border-color: rgba(0, 122, 204, 0.5);
+}
+
+.emoji {
+	height: 1.4em;
+}
+
+code {
+	font-size: 14px;
+	line-height: 19px;
+}
+
+/* for inline code */
+:not(pre):not(.hljs) > code {
+	color: #C9AE75; /* Change the old color so it seems less like an error */
+	font-size: inherit;
+}
+
+/* Page Break : use <div class="page"/> to insert page break
+-------------------------------------------------------- */
+.page {
+	page-break-after: always;
+}
+
+</style>
+
+<script src="https://unpkg.com/mermaid/dist/mermaid.min.js"></script>
+</head>
+<body>
+  <script>
+    mermaid.initialize({
+      startOnLoad: true,
+      theme: document.body.classList.contains('vscode-dark') || document.body.classList.contains('vscode-high-contrast')
+          ? 'dark'
+          : 'default'
+    });
+  </script>
+<h1 id="adapter-pattern--why-where-and-how-practical-c-example">Adapter pattern — why, where, and how (practical C# example)</h1>
+<p>
+    <img src="msd-book-front.png" 
+    alt="The MSD Book" width="200" style="float: left; margin: 0 1rem 1rem 0;"/>
+    Short version: use the <strong>Adapter</strong> when you need to make an existing class or third-party API look like the interface your code expects — without changing either side. It’s about <em>translation</em>: convert calls, data shapes, and semantics so the rest of your app remains clean and decoupled.</p>
+<p>Common situations:</p>
+<ul>
+<li>Integrating a third-party library whose API doesn’t match your interfaces.</li>
+<li>Replacing a legacy implementation gradually while keeping the rest of the system unchanged.</li>
+<li>Making multiple different implementations appear under a single interface (swap at runtime, test, fallback).</li>
+</ul>
+<p>Two styles:</p>
+<ul>
+<li><strong>Object adapter (composition)</strong> — most common in C#. The adapter holds an instance of the incompatible class and translates calls.</li>
+<li><strong>Class adapter (inheritance)</strong> — less common in C# because of single inheritance constraints; possible via multiple interfaces or subclassing, but tends to be brittle.</li>
+</ul>
+<hr>
+<h1 id="before--after--real-c-example">Before / After — real C# example</h1>
+<p>Scenario: your app needs a shipping carrier abstraction <code>ICarrier.Ship(Order)</code>. The new carrier SDK exposes a different API (<code>ThirdPartyCarrier.SendPackage(PackageInfo)</code>). The app currently calls the third-party directly (tight coupling). We'll refactor with an adapter so the app depends only on <code>ICarrier</code>.</p>
+<p>All code is a minimal .NET 6+ console example — copy, paste, run.</p>
+<h2 id="before--tight-coupling-bad">Before — tight coupling (bad)</h2>
+<pre class="hljs"><code><div><span class="hljs-comment">// ProgramBefore.cs</span>
+<span class="hljs-keyword">using</span> System;
+
+<span class="hljs-keyword">namespace</span> <span class="hljs-title">AdapterBefore</span>
+{
+    <span class="hljs-comment">// Domain model</span>
+    <span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title">Order</span>
+    {
+        <span class="hljs-keyword">public</span> <span class="hljs-keyword">string</span> OrderId { <span class="hljs-keyword">get</span>; init; }
+        <span class="hljs-keyword">public</span> <span class="hljs-keyword">string</span> Address { <span class="hljs-keyword">get</span>; init; }
+        <span class="hljs-keyword">public</span> <span class="hljs-keyword">double</span> WeightKg { <span class="hljs-keyword">get</span>; init; }
+    }
+
+    <span class="hljs-comment">// Third-party carrier (incompatible)</span>
+    <span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title">ThirdPartyCarrier</span>
+    {
+        <span class="hljs-function"><span class="hljs-keyword">public</span> ThirdPartyResponse <span class="hljs-title">SendPackage</span>(<span class="hljs-params">PackageInfo package</span>)</span>
+        {
+            <span class="hljs-comment">// pretend this calls remote API</span>
+            Console.WriteLine(<span class="hljs-string">$"ThirdPartyCarrier: sending package <span class="hljs-subst">{package.Reference}</span> to <span class="hljs-subst">{package.Destination}</span>"</span>);
+            <span class="hljs-keyword">return</span> <span class="hljs-keyword">new</span> ThirdPartyResponse { Status = <span class="hljs-string">"OK"</span>, TrackingNumber = <span class="hljs-string">"TP-"</span> + package.Reference };
+        }
+    }
+
+    <span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title">PackageInfo</span>
+    {
+        <span class="hljs-keyword">public</span> <span class="hljs-keyword">string</span> Reference { <span class="hljs-keyword">get</span>; init; }
+        <span class="hljs-keyword">public</span> <span class="hljs-keyword">string</span> Destination { <span class="hljs-keyword">get</span>; init; }
+        <span class="hljs-keyword">public</span> <span class="hljs-keyword">double</span> MassInKg { <span class="hljs-keyword">get</span>; init; }
+    }
+
+    <span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title">ThirdPartyResponse</span>
+    {
+        <span class="hljs-keyword">public</span> <span class="hljs-keyword">string</span> Status { <span class="hljs-keyword">get</span>; init; }
+        <span class="hljs-keyword">public</span> <span class="hljs-keyword">string</span> TrackingNumber { <span class="hljs-keyword">get</span>; init; }
+    }
+
+    <span class="hljs-comment">// Service that uses third party directly -&gt; NOT testable, hard to swap</span>
+    <span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title">ShippingService</span>
+    {
+        <span class="hljs-keyword">private</span> <span class="hljs-keyword">readonly</span> ThirdPartyCarrier _carrier = <span class="hljs-keyword">new</span> ThirdPartyCarrier();
+
+        <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">string</span> <span class="hljs-title">ShipOrder</span>(<span class="hljs-params">Order order</span>)</span>
+        {
+            <span class="hljs-keyword">var</span> pkg = <span class="hljs-keyword">new</span> PackageInfo
+            {
+                Reference = order.OrderId,
+                Destination = order.Address,
+                MassInKg = order.WeightKg
+            };
+
+            <span class="hljs-keyword">var</span> response = _carrier.SendPackage(pkg);
+
+            <span class="hljs-keyword">if</span> (response.Status != <span class="hljs-string">"OK"</span>)
+                <span class="hljs-keyword">throw</span> <span class="hljs-keyword">new</span> Exception(<span class="hljs-string">"Shipping failed"</span>);
+
+            <span class="hljs-keyword">return</span> response.TrackingNumber;
+        }
+    }
+
+    <span class="hljs-keyword">class</span> <span class="hljs-title">Program</span>
+    {
+        <span class="hljs-function"><span class="hljs-keyword">static</span> <span class="hljs-keyword">void</span> <span class="hljs-title">Main</span>(<span class="hljs-params"></span>)</span>
+        {
+            <span class="hljs-keyword">var</span> service = <span class="hljs-keyword">new</span> ShippingService();
+            <span class="hljs-keyword">var</span> tracking = service.ShipOrder(<span class="hljs-keyword">new</span> Order { OrderId = <span class="hljs-string">"1001"</span>, Address = <span class="hljs-string">"1 Main St"</span>, WeightKg = <span class="hljs-number">2.3</span> });
+            Console.WriteLine(<span class="hljs-string">$"Tracking: <span class="hljs-subst">{tracking}</span>"</span>);
+        }
+    }
+}
+</div></code></pre>
+<p>Problems:</p>
+<ul>
+<li><code>ShippingService</code> is tightly coupled to <code>ThirdPartyCarrier</code>.</li>
+<li>Hard to unit test <code>ShippingService</code> (can't mock carrier easily).</li>
+<li>Replacing carrier requires editing <code>ShippingService</code>.</li>
+</ul>
+<hr>
+<h2 id="after--adapter-applied-good">After — adapter applied (good)</h2>
+<p>We introduce <code>ICarrier</code> (the app interface), an adapter <code>ThirdPartyCarrierAdapter : ICarrier</code> that translates <code>Order</code> → <code>PackageInfo</code> and <code>ThirdPartyResponse</code> → <code>ShipmentResult</code>. <code>ShippingService</code> depends on <code>ICarrier</code> (injected) — easily testable and swappable.</p>
+<pre class="hljs"><code><div><span class="hljs-comment">// ProgramAfter.cs</span>
+<span class="hljs-keyword">using</span> System;
+
+<span class="hljs-keyword">namespace</span> <span class="hljs-title">AdapterAfter</span>
+{
+    <span class="hljs-comment">// Domain model</span>
+    <span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title">Order</span>
+    {
+        <span class="hljs-keyword">public</span> <span class="hljs-keyword">string</span> OrderId { <span class="hljs-keyword">get</span>; init; }
+        <span class="hljs-keyword">public</span> <span class="hljs-keyword">string</span> Address { <span class="hljs-keyword">get</span>; init; }
+        <span class="hljs-keyword">public</span> <span class="hljs-keyword">double</span> WeightKg { <span class="hljs-keyword">get</span>; init; }
+    }
+
+    <span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title">ShipmentResult</span>
+    {
+        <span class="hljs-keyword">public</span> <span class="hljs-keyword">bool</span> Success { <span class="hljs-keyword">get</span>; init; }
+        <span class="hljs-keyword">public</span> <span class="hljs-keyword">string</span> TrackingNumber { <span class="hljs-keyword">get</span>; init; }
+        <span class="hljs-keyword">public</span> <span class="hljs-keyword">string</span> Error { <span class="hljs-keyword">get</span>; init; }
+    }
+
+    <span class="hljs-comment">// The interface the rest of the app expects</span>
+    <span class="hljs-keyword">public</span> <span class="hljs-keyword">interface</span> <span class="hljs-title">ICarrier</span>
+    {
+        <span class="hljs-function">ShipmentResult <span class="hljs-title">Ship</span>(<span class="hljs-params">Order order</span>)</span>;
+    }
+
+    <span class="hljs-comment">// Third-party carrier (unchangeable)</span>
+    <span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title">ThirdPartyCarrier</span>
+    {
+        <span class="hljs-function"><span class="hljs-keyword">public</span> ThirdPartyResponse <span class="hljs-title">SendPackage</span>(<span class="hljs-params">PackageInfo package</span>)</span>
+        {
+            <span class="hljs-comment">// pretend this calls remote API</span>
+            Console.WriteLine(<span class="hljs-string">$"ThirdPartyCarrier: sending package <span class="hljs-subst">{package.Reference}</span> to <span class="hljs-subst">{package.Destination}</span>"</span>);
+            <span class="hljs-keyword">return</span> <span class="hljs-keyword">new</span> ThirdPartyResponse { Status = <span class="hljs-string">"OK"</span>, TrackingNumber = <span class="hljs-string">"TP-"</span> + package.Reference };
+        }
+    }
+
+    <span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title">PackageInfo</span>
+    {
+        <span class="hljs-keyword">public</span> <span class="hljs-keyword">string</span> Reference { <span class="hljs-keyword">get</span>; init; }
+        <span class="hljs-keyword">public</span> <span class="hljs-keyword">string</span> Destination { <span class="hljs-keyword">get</span>; init; }
+        <span class="hljs-keyword">public</span> <span class="hljs-keyword">double</span> MassInKg { <span class="hljs-keyword">get</span>; init; }
+    }
+
+    <span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title">ThirdPartyResponse</span>
+    {
+        <span class="hljs-keyword">public</span> <span class="hljs-keyword">string</span> Status { <span class="hljs-keyword">get</span>; init; }
+        <span class="hljs-keyword">public</span> <span class="hljs-keyword">string</span> TrackingNumber { <span class="hljs-keyword">get</span>; init; }
+    }
+
+    <span class="hljs-comment">// The Adapter: converts between our ICarrier and ThirdPartyCarrier</span>
+    <span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title">ThirdPartyCarrierAdapter</span> : <span class="hljs-title">ICarrier</span>
+    {
+        <span class="hljs-keyword">private</span> <span class="hljs-keyword">readonly</span> ThirdPartyCarrier _thirdParty;
+
+        <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-title">ThirdPartyCarrierAdapter</span>(<span class="hljs-params">ThirdPartyCarrier thirdParty</span>)</span>
+        {
+            _thirdParty = thirdParty ?? <span class="hljs-keyword">throw</span> <span class="hljs-keyword">new</span> ArgumentNullException(<span class="hljs-keyword">nameof</span>(thirdParty));
+        }
+
+        <span class="hljs-function"><span class="hljs-keyword">public</span> ShipmentResult <span class="hljs-title">Ship</span>(<span class="hljs-params">Order order</span>)</span>
+        {
+            <span class="hljs-keyword">if</span> (order == <span class="hljs-literal">null</span>) <span class="hljs-keyword">throw</span> <span class="hljs-keyword">new</span> ArgumentNullException(<span class="hljs-keyword">nameof</span>(order));
+
+            <span class="hljs-comment">// mapping domain Order -&gt; third-party PackageInfo</span>
+            <span class="hljs-keyword">var</span> package = <span class="hljs-keyword">new</span> PackageInfo
+            {
+                Reference = order.OrderId,
+                Destination = order.Address,
+                MassInKg = order.WeightKg
+            };
+
+            <span class="hljs-keyword">try</span>
+            {
+                <span class="hljs-keyword">var</span> resp = _thirdParty.SendPackage(package);
+
+                <span class="hljs-comment">// map third-party response -&gt; domain ShipmentResult</span>
+                <span class="hljs-keyword">return</span> <span class="hljs-keyword">new</span> ShipmentResult
+                {
+                    Success = resp.Status == <span class="hljs-string">"OK"</span>,
+                    TrackingNumber = resp.TrackingNumber,
+                    Error = resp.Status == <span class="hljs-string">"OK"</span> ? <span class="hljs-literal">null</span> : <span class="hljs-string">$"Carrier error: <span class="hljs-subst">{resp.Status}</span>"</span>
+                };
+            }
+            <span class="hljs-keyword">catch</span> (Exception ex)
+            {
+                <span class="hljs-comment">// adapter shields the rest of app from third-party exceptions</span>
+                <span class="hljs-keyword">return</span> <span class="hljs-keyword">new</span> ShipmentResult
+                {
+                    Success = <span class="hljs-literal">false</span>,
+                    Error = <span class="hljs-string">$"Carrier exception: <span class="hljs-subst">{ex.Message}</span>"</span>
+                };
+            }
+        }
+    }
+
+    <span class="hljs-comment">// ShippingService now depends on ICarrier -&gt; DIP, easy to test &amp; swap</span>
+    <span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title">ShippingService</span>
+    {
+        <span class="hljs-keyword">private</span> <span class="hljs-keyword">readonly</span> ICarrier _carrier;
+
+        <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-title">ShippingService</span>(<span class="hljs-params">ICarrier carrier</span>)</span>
+        {
+            _carrier = carrier ?? <span class="hljs-keyword">throw</span> <span class="hljs-keyword">new</span> ArgumentNullException(<span class="hljs-keyword">nameof</span>(carrier));
+        }
+
+        <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">string</span> <span class="hljs-title">ShipOrder</span>(<span class="hljs-params">Order order</span>)</span>
+        {
+            <span class="hljs-keyword">var</span> result = _carrier.Ship(order);
+
+            <span class="hljs-keyword">if</span> (!result.Success)
+            {
+                <span class="hljs-keyword">throw</span> <span class="hljs-keyword">new</span> InvalidOperationException(<span class="hljs-string">$"Shipping failed: <span class="hljs-subst">{result.Error}</span>"</span>);
+            }
+
+            <span class="hljs-keyword">return</span> result.TrackingNumber;
+        }
+    }
+
+    <span class="hljs-comment">// Example usage</span>
+    <span class="hljs-keyword">class</span> <span class="hljs-title">Program</span>
+    {
+        <span class="hljs-function"><span class="hljs-keyword">static</span> <span class="hljs-keyword">void</span> <span class="hljs-title">Main</span>(<span class="hljs-params"></span>)</span>
+        {
+            <span class="hljs-keyword">var</span> thirdParty = <span class="hljs-keyword">new</span> ThirdPartyCarrier();
+            ICarrier adapter = <span class="hljs-keyword">new</span> ThirdPartyCarrierAdapter(thirdParty);
+            <span class="hljs-keyword">var</span> service = <span class="hljs-keyword">new</span> ShippingService(adapter);
+
+            <span class="hljs-keyword">var</span> order = <span class="hljs-keyword">new</span> Order { OrderId = <span class="hljs-string">"1001"</span>, Address = <span class="hljs-string">"1 Main St"</span>, WeightKg = <span class="hljs-number">2.3</span> };
+            <span class="hljs-keyword">var</span> tracking = service.ShipOrder(order);
+            Console.WriteLine(<span class="hljs-string">$"Tracking: <span class="hljs-subst">{tracking}</span>"</span>);
+
+            <span class="hljs-comment">// Replace adapter at runtime if needed (e.g., for testing)</span>
+            ICarrier fakeCarrier = <span class="hljs-keyword">new</span> InMemoryCarrier();
+            <span class="hljs-keyword">var</span> testService = <span class="hljs-keyword">new</span> ShippingService(fakeCarrier);
+            Console.WriteLine(<span class="hljs-string">"Test tracking: "</span> + testService.ShipOrder(order));
+        }
+    }
+
+    <span class="hljs-comment">// A simple in-memory carrier for tests or local fallback</span>
+    <span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title">InMemoryCarrier</span> : <span class="hljs-title">ICarrier</span>
+    {
+        <span class="hljs-function"><span class="hljs-keyword">public</span> ShipmentResult <span class="hljs-title">Ship</span>(<span class="hljs-params">Order order</span>)</span> =&gt;
+            <span class="hljs-keyword">new</span> ShipmentResult { Success = <span class="hljs-literal">true</span>, TrackingNumber = <span class="hljs-string">"INMEM-"</span> + order.OrderId };
+    }
+}
+</div></code></pre>
+<p>Why this refactor is better:</p>
+<ul>
+<li><code>ShippingService</code> depends on the abstraction <code>ICarrier</code> (Dependency Inversion).</li>
+<li>Adapter isolates mapping and error handling from business logic.</li>
+<li>Swapping carriers or stubbing in tests is trivial.</li>
+<li>You can gradually add adapters for other carriers without changing <code>ShippingService</code>.</li>
+</ul>
+<hr>
+<h1 id="practical-guidance--how-to-implement-an-adapter-well">Practical guidance — how to implement an adapter well</h1>
+<ol>
+<li>
+<p><strong>Keep adapter responsibility limited</strong></p>
+<ul>
+<li>Adapter should translate calls and data only — don’t put business logic there.</li>
+</ul>
+</li>
+<li>
+<p><strong>Encapsulate mapping logic</strong></p>
+<ul>
+<li>Centralize mapping code inside the adapter to avoid scattering conversions.</li>
+</ul>
+</li>
+<li>
+<p><strong>Normalize error handling &amp; exceptions</strong></p>
+<ul>
+<li>Adapter should convert third-party errors into your domain error/result types.</li>
+</ul>
+</li>
+<li>
+<p><strong>Make adapters small and testable</strong></p>
+<ul>
+<li>Unit test mapping and error-paths in the adapter; integration tests verify real carrier behavior.</li>
+</ul>
+</li>
+<li>
+<p><strong>Use dependency injection</strong></p>
+<ul>
+<li>Inject the adapter as the <code>ICarrier</code> implementation; makes swapping trivial.</li>
+</ul>
+</li>
+</ol>
+<hr>
+<h1 id="lint-style-checklist-for-code-reviews">Lint-style checklist for code reviews</h1>
+<ul>
+<li><input type="checkbox" id="checkbox0"><label for="checkbox0"></label><strong>Abstraction exists:</strong> Is there a clear interface/protocol the rest of the app uses (e.g., <code>ICarrier</code>)?</li>
+<li><input type="checkbox" id="checkbox1"><label for="checkbox1"></label><strong>Adapter encapsulates translation:</strong> Is mapping of data models and statuses confined to the adapter (not in callers)?</li>
+<li><input type="checkbox" id="checkbox2"><label for="checkbox2"></label><strong>No business logic leaked:</strong> Adapter contains only translation and error normalization — no domain rules.</li>
+<li><input type="checkbox" id="checkbox3"><label for="checkbox3"></label><strong>Exceptions translated:</strong> Third-party exceptions do not leak; adapter normalizes errors to domain types.</li>
+<li><input type="checkbox" id="checkbox4"><label for="checkbox4"></label><strong>Thin adapter:</strong> Adapter is small and focused; complex mapping factored into helper methods or mappers.</li>
+<li><input type="checkbox" id="checkbox5"><label for="checkbox5"></label><strong>DI-ready:</strong> The adapter (or interface) can be injected; no direct <code>new ThirdPartyCarrier()</code> inside business services.</li>
+<li><input type="checkbox" id="checkbox6"><label for="checkbox6"></label><strong>Test coverage:</strong> Adapter has unit tests for success + failure mapping; service using adapter has tests with fakes/mocks.</li>
+<li><input type="checkbox" id="checkbox7"><label for="checkbox7"></label><strong>No direct imports of third-party types across boundary:</strong> Consuming code should not depend on third-party SDK types.</li>
+<li><input type="checkbox" id="checkbox8"><label for="checkbox8"></label><strong>Performance check:</strong> Adapter does not introduce heavy synchronous blocking or large allocations unintentionally.</li>
+<li><input type="checkbox" id="checkbox9"><label for="checkbox9"></label><strong>Logging and metrics:</strong> Important adapter events (mapping failures, timeouts) are logged or instrumented appropriately.</li>
+</ul>
+<hr>
+<h1 id="common-pitfalls--how-to-avoid-them">Common pitfalls &amp; how to avoid them</h1>
+<ol>
+<li>
+<p><strong>Over-adapting / multiple responsibilities</strong></p>
+<ul>
+<li>Pitfall: Adapter becomes a place to hide significant business logic.</li>
+<li>Avoid: Keep business rules out; adapter = adapter (translate and normalize).</li>
+</ul>
+</li>
+<li>
+<p><strong>Leaking third-party types through your API</strong></p>
+<ul>
+<li>Pitfall: Domain code starts referencing <code>PackageInfo</code> or <code>ThirdPartyResponse</code>.</li>
+<li>Avoid: Map to domain DTOs and return domain results.</li>
+</ul>
+</li>
+<li>
+<p><strong>Duplicate mapping code</strong></p>
+<ul>
+<li>Pitfall: Several adapters or services do the same conversions.</li>
+<li>Avoid: Share mapping helpers or a small mapper class.</li>
+</ul>
+</li>
+<li>
+<p><strong>Swapping performance assumptions</strong></p>
+<ul>
+<li>Pitfall: New adapter introduces blocking calls, slow serialization, or many network round trips.</li>
+<li>Avoid: Profile, make adapters async if necessary, and batch work where appropriate.</li>
+</ul>
+</li>
+<li>
+<p><strong>Ignoring failure modes</strong></p>
+<ul>
+<li>Pitfall: Adapter returns raw exceptions or nulls on errors; callers crash.</li>
+<li>Avoid: Normalize to <code>ShipmentResult</code>/error objects and add retries/timeouts inside the adapter if appropriate.</li>
+</ul>
+</li>
+<li>
+<p><strong>Overuse of Adapter when a Facade/Bridge is better</strong></p>
+<ul>
+<li>Pitfall: Using adapter to hide a whole subsystem or to add new functionality.</li>
+<li>Avoid: If you need to provide a simpler API over a set of complex classes, consider <strong>Facade</strong>. If you need to vary implementations orthogonally, consider <strong>Bridge</strong>.</li>
+</ul>
+</li>
+<li>
+<p><strong>Too much translation in hot paths</strong></p>
+<ul>
+<li>Pitfall: Heavy serialization/deserialization or mapping on critical paths causing latency.</li>
+<li>Avoid: Optimize mapping (avoid reflection), use pooled objects, or move expensive transforms off the hot path.</li>
+</ul>
+</li>
+</ol>
+<hr>
+<h1 id="quick-decision-guide-adapter-vs-other-patterns">Quick decision guide: Adapter vs other patterns</h1>
+<ul>
+<li><strong>Adapter</strong> — translate one interface to another (use this when the interface mismatch is the issue).</li>
+<li><strong>Facade</strong> — provide a simpler interface to a complex subsystem (use when you need to simplify).</li>
+<li><strong>Decorator</strong> — extend behavior dynamically (use when you want to add responsibilities).</li>
+<li><strong>Bridge</strong> — separate abstraction from implementation so both can vary independently (use when you expect many implementations and abstractions to evolve).</li>
+</ul>
+<hr>
+<h1 id="final-checklist-for-adoption">Final checklist for adoption</h1>
+<ul>
+<li>Identify the boundary interface (<code>ICarrier</code>) and ensure domain code depends only on it.</li>
+<li>Create adapters that implement the domain interface and encapsulate all translation/error handling.</li>
+<li>Add unit tests for adapters (mapping success/failure) and services (use fakes).</li>
+<li>Wire via DI and keep original third-party SDK usage confined to adapter(s).</li>
+</ul>
+<hr>
+<p><strong>NOTE:</strong> This page is generated with assistance from AI tools.</p>
+
+</body>
+</html>

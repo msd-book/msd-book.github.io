@@ -1,0 +1,590 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>The MSD Book :: ISP Example</title>
+<meta http-equiv="Content-type" content="text/html;charset=UTF-8">
+
+<style>
+/* https://github.com/microsoft/vscode/blob/master/extensions/markdown-language-features/media/markdown.css */
+/*---------------------------------------------------------------------------------------------
+ *  Copyright (c) Microsoft Corporation. All rights reserved.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
+ *--------------------------------------------------------------------------------------------*/
+
+body {
+	font-family: var(--vscode-markdown-font-family, -apple-system, BlinkMacSystemFont, "Segoe WPC", "Segoe UI", "Ubuntu", "Droid Sans", sans-serif);
+	font-size: var(--vscode-markdown-font-size, 14px);
+	padding: 0 26px;
+	line-height: var(--vscode-markdown-line-height, 22px);
+	word-wrap: break-word;
+}
+
+#code-csp-warning {
+	position: fixed;
+	top: 0;
+	right: 0;
+	color: white;
+	margin: 16px;
+	text-align: center;
+	font-size: 12px;
+	font-family: sans-serif;
+	background-color:#444444;
+	cursor: pointer;
+	padding: 6px;
+	box-shadow: 1px 1px 1px rgba(0,0,0,.25);
+}
+
+#code-csp-warning:hover {
+	text-decoration: none;
+	background-color:#007acc;
+	box-shadow: 2px 2px 2px rgba(0,0,0,.25);
+}
+
+body.scrollBeyondLastLine {
+	margin-bottom: calc(100vh - 22px);
+}
+
+body.showEditorSelection .code-line {
+	position: relative;
+}
+
+body.showEditorSelection .code-active-line:before,
+body.showEditorSelection .code-line:hover:before {
+	content: "";
+	display: block;
+	position: absolute;
+	top: 0;
+	left: -12px;
+	height: 100%;
+}
+
+body.showEditorSelection li.code-active-line:before,
+body.showEditorSelection li.code-line:hover:before {
+	left: -30px;
+}
+
+.vscode-light.showEditorSelection .code-active-line:before {
+	border-left: 3px solid rgba(0, 0, 0, 0.15);
+}
+
+.vscode-light.showEditorSelection .code-line:hover:before {
+	border-left: 3px solid rgba(0, 0, 0, 0.40);
+}
+
+.vscode-light.showEditorSelection .code-line .code-line:hover:before {
+	border-left: none;
+}
+
+.vscode-dark.showEditorSelection .code-active-line:before {
+	border-left: 3px solid rgba(255, 255, 255, 0.4);
+}
+
+.vscode-dark.showEditorSelection .code-line:hover:before {
+	border-left: 3px solid rgba(255, 255, 255, 0.60);
+}
+
+.vscode-dark.showEditorSelection .code-line .code-line:hover:before {
+	border-left: none;
+}
+
+.vscode-high-contrast.showEditorSelection .code-active-line:before {
+	border-left: 3px solid rgba(255, 160, 0, 0.7);
+}
+
+.vscode-high-contrast.showEditorSelection .code-line:hover:before {
+	border-left: 3px solid rgba(255, 160, 0, 1);
+}
+
+.vscode-high-contrast.showEditorSelection .code-line .code-line:hover:before {
+	border-left: none;
+}
+
+img {
+	max-width: 100%;
+	max-height: 100%;
+}
+
+a {
+	text-decoration: none;
+}
+
+a:hover {
+	text-decoration: underline;
+}
+
+a:focus,
+input:focus,
+select:focus,
+textarea:focus {
+	outline: 1px solid -webkit-focus-ring-color;
+	outline-offset: -1px;
+}
+
+hr {
+	border: 0;
+	height: 2px;
+	border-bottom: 2px solid;
+}
+
+h1 {
+	padding-bottom: 0.3em;
+	line-height: 1.2;
+	border-bottom-width: 1px;
+	border-bottom-style: solid;
+}
+
+h1, h2, h3 {
+	font-weight: normal;
+}
+
+table {
+	border-collapse: collapse;
+}
+
+table > thead > tr > th {
+	text-align: left;
+	border-bottom: 1px solid;
+}
+
+table > thead > tr > th,
+table > thead > tr > td,
+table > tbody > tr > th,
+table > tbody > tr > td {
+	padding: 5px 10px;
+}
+
+table > tbody > tr + tr > td {
+	border-top: 1px solid;
+}
+
+blockquote {
+	margin: 0 7px 0 5px;
+	padding: 0 16px 0 10px;
+	border-left-width: 5px;
+	border-left-style: solid;
+}
+
+code {
+	font-family: Menlo, Monaco, Consolas, "Droid Sans Mono", "Courier New", monospace, "Droid Sans Fallback";
+	font-size: 1em;
+	line-height: 1.357em;
+}
+
+body.wordWrap pre {
+	white-space: pre-wrap;
+}
+
+pre:not(.hljs),
+pre.hljs code > div {
+	padding: 16px;
+	border-radius: 3px;
+	overflow: auto;
+}
+
+pre code {
+	color: var(--vscode-editor-foreground);
+	tab-size: 4;
+}
+
+/** Theming */
+
+.vscode-light pre {
+	background-color: rgba(220, 220, 220, 0.4);
+}
+
+.vscode-dark pre {
+	background-color: rgba(10, 10, 10, 0.4);
+}
+
+.vscode-high-contrast pre {
+	background-color: rgb(0, 0, 0);
+}
+
+.vscode-high-contrast h1 {
+	border-color: rgb(0, 0, 0);
+}
+
+.vscode-light table > thead > tr > th {
+	border-color: rgba(0, 0, 0, 0.69);
+}
+
+.vscode-dark table > thead > tr > th {
+	border-color: rgba(255, 255, 255, 0.69);
+}
+
+.vscode-light h1,
+.vscode-light hr,
+.vscode-light table > tbody > tr + tr > td {
+	border-color: rgba(0, 0, 0, 0.18);
+}
+
+.vscode-dark h1,
+.vscode-dark hr,
+.vscode-dark table > tbody > tr + tr > td {
+	border-color: rgba(255, 255, 255, 0.18);
+}
+
+</style>
+
+<style>
+/* Tomorrow Theme */
+/* http://jmblog.github.com/color-themes-for-google-code-highlightjs */
+/* Original theme - https://github.com/chriskempson/tomorrow-theme */
+
+/* Tomorrow Comment */
+.hljs-comment,
+.hljs-quote {
+	color: #8e908c;
+}
+
+/* Tomorrow Red */
+.hljs-variable,
+.hljs-template-variable,
+.hljs-tag,
+.hljs-name,
+.hljs-selector-id,
+.hljs-selector-class,
+.hljs-regexp,
+.hljs-deletion {
+	color: #c82829;
+}
+
+/* Tomorrow Orange */
+.hljs-number,
+.hljs-built_in,
+.hljs-builtin-name,
+.hljs-literal,
+.hljs-type,
+.hljs-params,
+.hljs-meta,
+.hljs-link {
+	color: #f5871f;
+}
+
+/* Tomorrow Yellow */
+.hljs-attribute {
+	color: #eab700;
+}
+
+/* Tomorrow Green */
+.hljs-string,
+.hljs-symbol,
+.hljs-bullet,
+.hljs-addition {
+	color: #718c00;
+}
+
+/* Tomorrow Blue */
+.hljs-title,
+.hljs-section {
+	color: #4271ae;
+}
+
+/* Tomorrow Purple */
+.hljs-keyword,
+.hljs-selector-tag {
+	color: #8959a8;
+}
+
+.hljs {
+	display: block;
+	overflow-x: auto;
+	color: #4d4d4c;
+	padding: 0.5em;
+}
+
+.hljs-emphasis {
+	font-style: italic;
+}
+
+.hljs-strong {
+	font-weight: bold;
+}
+</style>
+
+<style>
+/*
+ * Markdown PDF CSS
+ */
+
+ body {
+	font-family: -apple-system, BlinkMacSystemFont, "Segoe WPC", "Segoe UI", "Ubuntu", "Droid Sans", sans-serif, "Meiryo";
+	padding: 0 12px;
+}
+
+pre {
+	background-color: #f8f8f8;
+	border: 1px solid #cccccc;
+	border-radius: 3px;
+	overflow-x: auto;
+	white-space: pre-wrap;
+	overflow-wrap: break-word;
+}
+
+pre:not(.hljs) {
+	padding: 23px;
+	line-height: 19px;
+}
+
+blockquote {
+	background: rgba(127, 127, 127, 0.1);
+	border-color: rgba(0, 122, 204, 0.5);
+}
+
+.emoji {
+	height: 1.4em;
+}
+
+code {
+	font-size: 14px;
+	line-height: 19px;
+}
+
+/* for inline code */
+:not(pre):not(.hljs) > code {
+	color: #C9AE75; /* Change the old color so it seems less like an error */
+	font-size: inherit;
+}
+
+/* Page Break : use <div class="page"/> to insert page break
+-------------------------------------------------------- */
+.page {
+	page-break-after: always;
+}
+
+</style>
+
+<script src="https://unpkg.com/mermaid/dist/mermaid.min.js"></script>
+</head>
+<body>
+  <script>
+    mermaid.initialize({
+      startOnLoad: true,
+      theme: document.body.classList.contains('vscode-dark') || document.body.classList.contains('vscode-high-contrast')
+          ? 'dark'
+          : 'default'
+    });
+  </script>
+<h1 id="interface-segregation-principle-isp--deeper-dive">Interface Segregation Principle (ISP) — deeper dive</h1>
+<p>
+	<img src="msd-book-front.png" 
+    alt="The MSD Book" width="200" style="float: left; margin: 0 1rem 1rem 0;"/>
+	<strong>Short definition:</strong> ISP says <em>clients should not be forced to depend on interfaces they do not use</em>. In practice that means prefer many small, focused interfaces to one large “fat” interface.</p>
+<p>Why it matters in modern software</p>
+<ul>
+<li>Reduces <strong>unnecessary coupling</strong> — changes to a large interface ripple to many clients.</li>
+<li>Makes <strong>implementations simpler</strong> — classes only implement what they actually need.</li>
+<li>Improves <strong>testability</strong> — you can mock a small interface easily.</li>
+<li>Enables <strong>clearer abstractions</strong> in microservices, libraries, and event-driven code where consumers vary widely.</li>
+</ul>
+<p>When to apply ISP</p>
+<ul>
+<li>Public APIs or libraries consumed by different clients.</li>
+<li>Hardware/adapter layers (drivers, printers, payment gateways).</li>
+<li>Large services where different consumers require different subsets of behavior.</li>
+<li>Any place a single interface grows beyond a single cohesive responsibility.</li>
+</ul>
+<p>When <em>not</em> to over-apply</p>
+<ul>
+<li>Don’t create a million tiny interfaces for the sake of it — keep cohesion. If two methods are always used together by clients, they can reasonably live in the same interface.</li>
+</ul>
+<hr>
+<h1 id="concrete-example-java">Concrete example (Java)</h1>
+<p>We’ll start with a common anti-pattern — a fat <code>OfficeMachine</code> interface that forces implementers to provide methods they don’t need.</p>
+<h3 id="before--isp-violation">Before — ISP violation</h3>
+<pre class="hljs"><code><div><span class="hljs-comment">// Fat interface</span>
+<span class="hljs-keyword">public</span> <span class="hljs-class"><span class="hljs-keyword">interface</span> <span class="hljs-title">OfficeMachine</span> </span>{
+    <span class="hljs-function"><span class="hljs-keyword">void</span> <span class="hljs-title">print</span><span class="hljs-params">(Document d)</span></span>;
+    <span class="hljs-function"><span class="hljs-keyword">void</span> <span class="hljs-title">scan</span><span class="hljs-params">(Document d)</span></span>;
+    <span class="hljs-function"><span class="hljs-keyword">void</span> <span class="hljs-title">fax</span><span class="hljs-params">(Document d)</span></span>;
+    <span class="hljs-function"><span class="hljs-keyword">void</span> <span class="hljs-title">sendEmail</span><span class="hljs-params">(Document d)</span></span>;
+}
+
+<span class="hljs-comment">// A simple printer forced to implement unused members</span>
+<span class="hljs-keyword">public</span> <span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">SimplePrinter</span> <span class="hljs-keyword">implements</span> <span class="hljs-title">OfficeMachine</span> </span>{
+    <span class="hljs-meta">@Override</span>
+    <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title">print</span><span class="hljs-params">(Document d)</span> </span>{ <span class="hljs-comment">/* printing logic */</span> }
+
+    <span class="hljs-meta">@Override</span>
+    <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title">scan</span><span class="hljs-params">(Document d)</span> </span>{
+        <span class="hljs-keyword">throw</span> <span class="hljs-keyword">new</span> UnsupportedOperationException(<span class="hljs-string">"scan not supported"</span>);
+    }
+
+    <span class="hljs-meta">@Override</span>
+    <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title">fax</span><span class="hljs-params">(Document d)</span> </span>{
+        <span class="hljs-keyword">throw</span> <span class="hljs-keyword">new</span> UnsupportedOperationException(<span class="hljs-string">"fax not supported"</span>);
+    }
+
+    <span class="hljs-meta">@Override</span>
+    <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title">sendEmail</span><span class="hljs-params">(Document d)</span> </span>{
+        <span class="hljs-keyword">throw</span> <span class="hljs-keyword">new</span> UnsupportedOperationException(<span class="hljs-string">"email not supported"</span>);
+    }
+}
+
+<span class="hljs-comment">// A client depends on OfficeMachine but only needs print</span>
+<span class="hljs-keyword">public</span> <span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">PrintService</span> </span>{
+    <span class="hljs-keyword">private</span> <span class="hljs-keyword">final</span> OfficeMachine machine;
+
+    <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-title">PrintService</span><span class="hljs-params">(OfficeMachine machine)</span> </span>{
+        <span class="hljs-keyword">this</span>.machine = machine;
+    }
+
+    <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title">printDoc</span><span class="hljs-params">(Document d)</span> </span>{
+        machine.print(d);
+    }
+}
+</div></code></pre>
+<p>Problems here:</p>
+<ul>
+<li><code>SimplePrinter</code> is forced to carry stub/unimplemented methods.</li>
+<li><code>PrintService</code> depends on a larger interface than necessary.</li>
+<li>Changes to <code>OfficeMachine</code> affect unrelated implementers.</li>
+</ul>
+<hr>
+<h3 id="after--isp-aligned-refactor">After — ISP-aligned refactor</h3>
+<p>Split into focused interfaces and compose them where needed.</p>
+<pre class="hljs"><code><div><span class="hljs-comment">// Segregated interfaces</span>
+<span class="hljs-keyword">public</span> <span class="hljs-class"><span class="hljs-keyword">interface</span> <span class="hljs-title">Printer</span> </span>{
+    <span class="hljs-function"><span class="hljs-keyword">void</span> <span class="hljs-title">print</span><span class="hljs-params">(Document d)</span></span>;
+}
+
+<span class="hljs-keyword">public</span> <span class="hljs-class"><span class="hljs-keyword">interface</span> <span class="hljs-title">Scanner</span> </span>{
+    <span class="hljs-function"><span class="hljs-keyword">void</span> <span class="hljs-title">scan</span><span class="hljs-params">(Document d)</span></span>;
+}
+
+<span class="hljs-keyword">public</span> <span class="hljs-class"><span class="hljs-keyword">interface</span> <span class="hljs-title">Fax</span> </span>{
+    <span class="hljs-function"><span class="hljs-keyword">void</span> <span class="hljs-title">fax</span><span class="hljs-params">(Document d)</span></span>;
+}
+
+<span class="hljs-keyword">public</span> <span class="hljs-class"><span class="hljs-keyword">interface</span> <span class="hljs-title">EmailSender</span> </span>{
+    <span class="hljs-function"><span class="hljs-keyword">void</span> <span class="hljs-title">sendEmail</span><span class="hljs-params">(Document d)</span></span>;
+}
+
+<span class="hljs-comment">// Compose interfaces when a device supports multiple capabilities</span>
+<span class="hljs-keyword">public</span> <span class="hljs-class"><span class="hljs-keyword">interface</span> <span class="hljs-title">MultiFunctionDevice</span> <span class="hljs-keyword">extends</span> <span class="hljs-title">Printer</span>, <span class="hljs-title">Scanner</span> </span>{}
+
+<span class="hljs-comment">// Implementations implement only what they need</span>
+<span class="hljs-keyword">public</span> <span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">SimplePrinter</span> <span class="hljs-keyword">implements</span> <span class="hljs-title">Printer</span> </span>{
+    <span class="hljs-meta">@Override</span>
+    <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title">print</span><span class="hljs-params">(Document d)</span> </span>{ <span class="hljs-comment">/* printing logic */</span> }
+}
+
+<span class="hljs-keyword">public</span> <span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">AllInOneDevice</span> <span class="hljs-keyword">implements</span> <span class="hljs-title">MultiFunctionDevice</span>, <span class="hljs-title">Fax</span>, <span class="hljs-title">EmailSender</span> </span>{
+    <span class="hljs-meta">@Override</span>
+    <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title">print</span><span class="hljs-params">(Document d)</span> </span>{ <span class="hljs-comment">/* print */</span> }
+
+    <span class="hljs-meta">@Override</span>
+    <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title">scan</span><span class="hljs-params">(Document d)</span> </span>{ <span class="hljs-comment">/* scan */</span> }
+
+    <span class="hljs-meta">@Override</span>
+    <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title">fax</span><span class="hljs-params">(Document d)</span> </span>{ <span class="hljs-comment">/* fax */</span> }
+
+    <span class="hljs-meta">@Override</span>
+    <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title">sendEmail</span><span class="hljs-params">(Document d)</span> </span>{ <span class="hljs-comment">/* send email */</span> }
+}
+
+<span class="hljs-comment">// Clients depend on the smallest interface they need</span>
+<span class="hljs-keyword">public</span> <span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">PrintService</span> </span>{
+    <span class="hljs-keyword">private</span> <span class="hljs-keyword">final</span> Printer printer;
+
+    <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-title">PrintService</span><span class="hljs-params">(Printer printer)</span> </span>{
+        <span class="hljs-keyword">this</span>.printer = printer;
+    }
+
+    <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title">printDoc</span><span class="hljs-params">(Document d)</span> </span>{
+        printer.print(d);
+    }
+}
+</div></code></pre>
+<p>Benefits after refactor:</p>
+<ul>
+<li><code>SimplePrinter</code> is minimal and has no unsupported methods.</li>
+<li><code>PrintService</code> explicitly expresses its dependency on <code>Printer</code> only.</li>
+<li>New behaviors (e.g., <code>sendFax</code>) can be added to small interfaces without touching unrelated classes.</li>
+</ul>
+<hr>
+<h1 id="practical-migration-steps">Practical migration steps</h1>
+<ol>
+<li><strong>Identify fat interfaces</strong> — grep for interfaces with many unrelated methods or <code>throw new UnsupportedOperationException</code>.</li>
+<li><strong>Group methods by cohesive responsibility</strong> — create new focused interfaces (e.g., <code>Printer</code>, <code>Scanner</code>).</li>
+<li><strong>Refactor implementations</strong> — implement the small interfaces they actually need.</li>
+<li><strong>Update clients</strong> — make clients depend on the narrow interfaces rather than the fat one.</li>
+<li><strong>Provide adapter/composite types</strong> — if some code expects the old interface, create an adapter that composes the smaller interfaces (temporary shim).</li>
+<li><strong>Run tests</strong> and update any DI/registrations.</li>
+<li><strong>Deprecate old fat interfaces</strong> gradually, not suddenly.</li>
+</ol>
+<hr>
+<h1 id="example-adapter-for-backward-compatibility">Example adapter for backward compatibility</h1>
+<p>If you must keep the old interface temporarily:</p>
+<pre class="hljs"><code><div><span class="hljs-keyword">public</span> <span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">OfficeMachineAdapter</span> <span class="hljs-keyword">implements</span> <span class="hljs-title">OfficeMachine</span> </span>{
+    <span class="hljs-keyword">private</span> <span class="hljs-keyword">final</span> Optional&lt;Printer&gt; printer;
+    <span class="hljs-keyword">private</span> <span class="hljs-keyword">final</span> Optional&lt;Scanner&gt; scanner;
+    <span class="hljs-keyword">private</span> <span class="hljs-keyword">final</span> Optional&lt;Fax&gt; fax;
+    <span class="hljs-keyword">private</span> <span class="hljs-keyword">final</span> Optional&lt;EmailSender&gt; emailSender;
+
+    <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-title">OfficeMachineAdapter</span><span class="hljs-params">(Printer p, Scanner s, Fax f, EmailSender e)</span> </span>{
+        <span class="hljs-keyword">this</span>.printer = Optional.ofNullable(p);
+        <span class="hljs-keyword">this</span>.scanner = Optional.ofNullable(s);
+        <span class="hljs-keyword">this</span>.fax = Optional.ofNullable(f);
+        <span class="hljs-keyword">this</span>.emailSender = Optional.ofNullable(e);
+    }
+
+    <span class="hljs-meta">@Override</span>
+    <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title">print</span><span class="hljs-params">(Document d)</span> </span>{
+        printer.orElseThrow(() -&gt; <span class="hljs-keyword">new</span> UnsupportedOperationException(<span class="hljs-string">"print not supported"</span>)).print(d);
+    }
+
+    <span class="hljs-meta">@Override</span>
+    <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title">scan</span><span class="hljs-params">(Document d)</span> </span>{
+        scanner.orElseThrow(() -&gt; <span class="hljs-keyword">new</span> UnsupportedOperationException(<span class="hljs-string">"scan not supported"</span>)).scan(d);
+    }
+
+    <span class="hljs-comment">// ... fax and sendEmail similar</span>
+}
+</div></code></pre>
+<p>This lets you migrate consumers gradually.</p>
+<hr>
+<h1 id="additional-real-world-patterns-where-isp-helps">Additional real-world patterns where ISP helps</h1>
+<ul>
+<li><strong>Microservices</strong>: expose multiple small endpoints rather than a single all-in-one RPC that many clients partially use.</li>
+<li><strong>SDKs/APIs</strong>: split large client interfaces into capability-focused clients (e.g., <code>StorageClient</code>, <code>AuthClient</code>).</li>
+<li><strong>Plugin systems</strong>: plugins implement only the lifecycle hooks they need.</li>
+<li><strong>Event handlers</strong>: specific event interfaces instead of a single catch-all handler.</li>
+</ul>
+<hr>
+<h1 id="tradeoffs--gotchas">Tradeoffs &amp; gotchas</h1>
+<ul>
+<li>Too many tiny interfaces can increase complexity. Aim for <em>logical cohesion</em>: group methods used together.</li>
+<li>Over-segregation can complicate DI bindings; plan for composite adapters or marker interfaces where needed.</li>
+<li>Consider evolution: version interfaces thoughtfully and prefer adding new specific interfaces over changing existing ones.</li>
+</ul>
+<hr>
+<h1 id="lint-style-checklist-for-code-reviews-isp-focused">Lint-style checklist for code reviews (ISP-focused)</h1>
+<p>Use these as short checklist items in PR templates:</p>
+<ol>
+<li><strong>Interface cohesion</strong>: Does the interface represent a single responsibility? ✔ / ✖</li>
+<li><strong>Client usage</strong>: Are any implementing classes forced to provide methods they never use or throw <code>UnsupportedOperationException</code>? ✔ / ✖</li>
+<li><strong>Minimal dependency</strong>: Do consumers depend on the narrowest interface needed? (Prefer <code>Printer</code> over <code>OfficeMachine</code>.) ✔ / ✖</li>
+<li><strong>Method grouping</strong>: Are methods grouped by behavior commonly used together? (If not, split.) ✔ / ✖</li>
+<li><strong>Avoid god interfaces</strong>: Reject interfaces that mix unrelated concerns (I/O, network, business logic). ✔ / ✖</li>
+<li><strong>Migration adapters</strong>: If changing a public interface, is there an adapter/shim for backward compatibility? ✔ / ✖</li>
+<li><strong>Tests exist</strong>: Are there unit tests for each small interface contract and for composite adapters? ✔ / ✖</li>
+<li><strong>DI registrations</strong>: Have DI/container registrations been updated to bind to the smaller interfaces? ✔ / ✖</li>
+<li><strong>Documentation</strong>: Are interfaces documented with intended clients and responsibilities? ✔ / ✖</li>
+<li><strong>Practical cohesion check</strong>: If &gt;2 disparate clients would need different subsets of methods, consider splitting the interface. ✔ / ✖</li>
+</ol>
+<hr>
+<h1 id="quick-checklist-for-implementing-isp-in-a-module">Quick checklist for implementing ISP in a module</h1>
+<ul>
+<li>Start by listing all methods and their consumers.</li>
+<li>For each consumer, create an interface that contains <em>only</em> the methods it needs.</li>
+<li>Keep interfaces named for the capability (<code>Printer</code>, <code>Authenticator</code>, <code>MetricsEmitter</code>).</li>
+<li>Use composition for devices/objects that support multiple capabilities.</li>
+<li>Add unit tests that mock only the focused interfaces.</li>
+<li>Review public APIs for backwards compatibility and provide adapters if needed.</li>
+</ul>
+<hr>
+<p><strong>NOTE:</strong> This page is generated with assistance from AI tools.</p>
+
+</body>
+</html>

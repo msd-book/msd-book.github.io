@@ -1,0 +1,529 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>The MSD Book :: Configure TLS</title>
+<meta http-equiv="Content-type" content="text/html;charset=UTF-8">
+
+<style>
+/* https://github.com/microsoft/vscode/blob/master/extensions/markdown-language-features/media/markdown.css */
+/*---------------------------------------------------------------------------------------------
+ *  Copyright (c) Microsoft Corporation. All rights reserved.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
+ *--------------------------------------------------------------------------------------------*/
+
+body {
+	font-family: var(--vscode-markdown-font-family, -apple-system, BlinkMacSystemFont, "Segoe WPC", "Segoe UI", "Ubuntu", "Droid Sans", sans-serif);
+	font-size: var(--vscode-markdown-font-size, 14px);
+	padding: 0 26px;
+	line-height: var(--vscode-markdown-line-height, 22px);
+	word-wrap: break-word;
+}
+
+#code-csp-warning {
+	position: fixed;
+	top: 0;
+	right: 0;
+	color: white;
+	margin: 16px;
+	text-align: center;
+	font-size: 12px;
+	font-family: sans-serif;
+	background-color:#444444;
+	cursor: pointer;
+	padding: 6px;
+	box-shadow: 1px 1px 1px rgba(0,0,0,.25);
+}
+
+#code-csp-warning:hover {
+	text-decoration: none;
+	background-color:#007acc;
+	box-shadow: 2px 2px 2px rgba(0,0,0,.25);
+}
+
+body.scrollBeyondLastLine {
+	margin-bottom: calc(100vh - 22px);
+}
+
+body.showEditorSelection .code-line {
+	position: relative;
+}
+
+body.showEditorSelection .code-active-line:before,
+body.showEditorSelection .code-line:hover:before {
+	content: "";
+	display: block;
+	position: absolute;
+	top: 0;
+	left: -12px;
+	height: 100%;
+}
+
+body.showEditorSelection li.code-active-line:before,
+body.showEditorSelection li.code-line:hover:before {
+	left: -30px;
+}
+
+.vscode-light.showEditorSelection .code-active-line:before {
+	border-left: 3px solid rgba(0, 0, 0, 0.15);
+}
+
+.vscode-light.showEditorSelection .code-line:hover:before {
+	border-left: 3px solid rgba(0, 0, 0, 0.40);
+}
+
+.vscode-light.showEditorSelection .code-line .code-line:hover:before {
+	border-left: none;
+}
+
+.vscode-dark.showEditorSelection .code-active-line:before {
+	border-left: 3px solid rgba(255, 255, 255, 0.4);
+}
+
+.vscode-dark.showEditorSelection .code-line:hover:before {
+	border-left: 3px solid rgba(255, 255, 255, 0.60);
+}
+
+.vscode-dark.showEditorSelection .code-line .code-line:hover:before {
+	border-left: none;
+}
+
+.vscode-high-contrast.showEditorSelection .code-active-line:before {
+	border-left: 3px solid rgba(255, 160, 0, 0.7);
+}
+
+.vscode-high-contrast.showEditorSelection .code-line:hover:before {
+	border-left: 3px solid rgba(255, 160, 0, 1);
+}
+
+.vscode-high-contrast.showEditorSelection .code-line .code-line:hover:before {
+	border-left: none;
+}
+
+img {
+	max-width: 100%;
+	max-height: 100%;
+}
+
+a {
+	text-decoration: none;
+}
+
+a:hover {
+	text-decoration: underline;
+}
+
+a:focus,
+input:focus,
+select:focus,
+textarea:focus {
+	outline: 1px solid -webkit-focus-ring-color;
+	outline-offset: -1px;
+}
+
+hr {
+	border: 0;
+	height: 2px;
+	border-bottom: 2px solid;
+}
+
+h1 {
+	padding-bottom: 0.3em;
+	line-height: 1.2;
+	border-bottom-width: 1px;
+	border-bottom-style: solid;
+}
+
+h1, h2, h3 {
+	font-weight: normal;
+}
+
+table {
+	border-collapse: collapse;
+}
+
+table > thead > tr > th {
+	text-align: left;
+	border-bottom: 1px solid;
+}
+
+table > thead > tr > th,
+table > thead > tr > td,
+table > tbody > tr > th,
+table > tbody > tr > td {
+	padding: 5px 10px;
+}
+
+table > tbody > tr + tr > td {
+	border-top: 1px solid;
+}
+
+blockquote {
+	margin: 0 7px 0 5px;
+	padding: 0 16px 0 10px;
+	border-left-width: 5px;
+	border-left-style: solid;
+}
+
+code {
+	font-family: Menlo, Monaco, Consolas, "Droid Sans Mono", "Courier New", monospace, "Droid Sans Fallback";
+	font-size: 1em;
+	line-height: 1.357em;
+}
+
+body.wordWrap pre {
+	white-space: pre-wrap;
+}
+
+pre:not(.hljs),
+pre.hljs code > div {
+	padding: 16px;
+	border-radius: 3px;
+	overflow: auto;
+}
+
+pre code {
+	color: var(--vscode-editor-foreground);
+	tab-size: 4;
+}
+
+/** Theming */
+
+.vscode-light pre {
+	background-color: rgba(220, 220, 220, 0.4);
+}
+
+.vscode-dark pre {
+	background-color: rgba(10, 10, 10, 0.4);
+}
+
+.vscode-high-contrast pre {
+	background-color: rgb(0, 0, 0);
+}
+
+.vscode-high-contrast h1 {
+	border-color: rgb(0, 0, 0);
+}
+
+.vscode-light table > thead > tr > th {
+	border-color: rgba(0, 0, 0, 0.69);
+}
+
+.vscode-dark table > thead > tr > th {
+	border-color: rgba(255, 255, 255, 0.69);
+}
+
+.vscode-light h1,
+.vscode-light hr,
+.vscode-light table > tbody > tr + tr > td {
+	border-color: rgba(0, 0, 0, 0.18);
+}
+
+.vscode-dark h1,
+.vscode-dark hr,
+.vscode-dark table > tbody > tr + tr > td {
+	border-color: rgba(255, 255, 255, 0.18);
+}
+
+</style>
+
+<style>
+/* Tomorrow Theme */
+/* http://jmblog.github.com/color-themes-for-google-code-highlightjs */
+/* Original theme - https://github.com/chriskempson/tomorrow-theme */
+
+/* Tomorrow Comment */
+.hljs-comment,
+.hljs-quote {
+	color: #8e908c;
+}
+
+/* Tomorrow Red */
+.hljs-variable,
+.hljs-template-variable,
+.hljs-tag,
+.hljs-name,
+.hljs-selector-id,
+.hljs-selector-class,
+.hljs-regexp,
+.hljs-deletion {
+	color: #c82829;
+}
+
+/* Tomorrow Orange */
+.hljs-number,
+.hljs-built_in,
+.hljs-builtin-name,
+.hljs-literal,
+.hljs-type,
+.hljs-params,
+.hljs-meta,
+.hljs-link {
+	color: #f5871f;
+}
+
+/* Tomorrow Yellow */
+.hljs-attribute {
+	color: #eab700;
+}
+
+/* Tomorrow Green */
+.hljs-string,
+.hljs-symbol,
+.hljs-bullet,
+.hljs-addition {
+	color: #718c00;
+}
+
+/* Tomorrow Blue */
+.hljs-title,
+.hljs-section {
+	color: #4271ae;
+}
+
+/* Tomorrow Purple */
+.hljs-keyword,
+.hljs-selector-tag {
+	color: #8959a8;
+}
+
+.hljs {
+	display: block;
+	overflow-x: auto;
+	color: #4d4d4c;
+	padding: 0.5em;
+}
+
+.hljs-emphasis {
+	font-style: italic;
+}
+
+.hljs-strong {
+	font-weight: bold;
+}
+</style>
+
+<style>
+/*
+ * Markdown PDF CSS
+ */
+
+ body {
+	font-family: -apple-system, BlinkMacSystemFont, "Segoe WPC", "Segoe UI", "Ubuntu", "Droid Sans", sans-serif, "Meiryo";
+	padding: 0 12px;
+}
+
+pre {
+	background-color: #f8f8f8;
+	border: 1px solid #cccccc;
+	border-radius: 3px;
+	overflow-x: auto;
+	white-space: pre-wrap;
+	overflow-wrap: break-word;
+}
+
+pre:not(.hljs) {
+	padding: 23px;
+	line-height: 19px;
+}
+
+blockquote {
+	background: rgba(127, 127, 127, 0.1);
+	border-color: rgba(0, 122, 204, 0.5);
+}
+
+.emoji {
+	height: 1.4em;
+}
+
+code {
+	font-size: 14px;
+	line-height: 19px;
+}
+
+/* for inline code */
+:not(pre):not(.hljs) > code {
+	color: #C9AE75; /* Change the old color so it seems less like an error */
+	font-size: inherit;
+}
+
+/* Page Break : use <div class="page"/> to insert page break
+-------------------------------------------------------- */
+.page {
+	page-break-after: always;
+}
+
+</style>
+
+<script src="https://unpkg.com/mermaid/dist/mermaid.min.js"></script>
+</head>
+<body>
+  <script>
+    mermaid.initialize({
+      startOnLoad: true,
+      theme: document.body.classList.contains('vscode-dark') || document.body.classList.contains('vscode-high-contrast')
+          ? 'dark'
+          : 'default'
+    });
+  </script>
+<p>
+	<img src="msd-book-front.png" 
+    alt="The MSD Book" width="200" style="float: left; margin: 0 1rem 1rem 0;"/>
+	Following is a practical, copy-pasteable guide to get TLS running on NGINX and a full checklist of verification steps you can run immediately.</p>
+<h1 id="1-quick-outline">1) Quick outline</h1>
+<ol>
+<li>Get a certificate (Let’s Encrypt / commercial / self-signed).</li>
+<li>Place cert + private key on the server.</li>
+<li>Configure NGINX server block(s) for HTTPS (listen 443 ssl, certificate paths, TLS options).</li>
+<li>Test the config and reload NGINX.</li>
+<li>Verify with <code>nginx -t</code>, <code>curl</code>, <code>openssl s_client</code>, and an external scanner (e.g., SSL Labs or testssl.sh).
+The NGINX docs and Mozilla’s config recommendations are good references while doing this. (<a href="https://nginx.org/en/docs/http/configuring_https_servers.html?utm_source=chatgpt.com" title="Configuring HTTPS servers">Nginx</a>)</li>
+</ol>
+<hr>
+<h1 id="2-obtain-a-certificate">2) Obtain a certificate</h1>
+<p><strong>Recommended (Let’s Encrypt + Certbot — automated, free):</strong>
+(on Ubuntu/Debian)</p>
+<pre class="hljs"><code><div>sudo apt update
+sudo apt install certbot python3-certbot-nginx
+<span class="hljs-comment"># get and auto-configure (interactive)</span>
+sudo certbot --nginx -d example.com -d www.example.com
+</div></code></pre>
+<p>Certbot can automatically add the <code>ssl_certificate</code>/<code>ssl_certificate_key</code> lines to your NGINX site. (There are equivalent instructions for other distros; DigitalOcean has a good tutorial.) (<a href="https://www.digitalocean.com/community/tutorials/how-to-secure-nginx-with-let-s-encrypt-on-ubuntu-20-04?utm_source=chatgpt.com" title="How To Secure Nginx with Let's Encrypt on Ubuntu">DigitalOcean</a>)</p>
+<p><strong>Manual / commercial / testing (self-signed):</strong></p>
+<pre class="hljs"><code><div><span class="hljs-comment"># self-signed (testing only)</span>
+sudo openssl req -x509 -nodes -days 365 -newkey rsa:2048 \
+  -keyout /etc/ssl/private/example.key \
+  -out /etc/ssl/certs/example.crt \
+  -subj <span class="hljs-string">"/CN=example.com"</span>
+</div></code></pre>
+<p>Place cert and key where NGINX can read them (e.g. <code>/etc/letsencrypt/live/example.com/fullchain.pem</code> and <code>/etc/letsencrypt/live/example.com/privkey.pem</code> for Certbot).</p>
+<hr>
+<h1 id="3-example-nginx-https-server-block-minimal--recommended-extras">3) Example NGINX HTTPS server block (minimal + recommended extras)</h1>
+<p>Replace <code>example.com</code> and paths with your values.</p>
+<pre class="hljs"><code><div><span class="hljs-section">server</span> {
+    <span class="hljs-attribute">listen</span> <span class="hljs-number">80</span>;
+    <span class="hljs-attribute">server_name</span> example.com www.example.com;
+    <span class="hljs-comment"># Redirect all HTTP to HTTPS</span>
+    <span class="hljs-attribute">return</span> <span class="hljs-number">301</span> https://<span class="hljs-variable">$host</span><span class="hljs-variable">$request_uri</span>;
+}
+
+<span class="hljs-section">server</span> {
+    <span class="hljs-attribute">listen</span> <span class="hljs-number">443</span> ssl http2;
+    <span class="hljs-attribute">server_name</span> example.com www.example.com;
+
+    <span class="hljs-attribute">ssl_certificate</span> /etc/letsencrypt/live/example.com/fullchain.pem;
+    <span class="hljs-attribute">ssl_certificate_key</span> /etc/letsencrypt/live/example.com/privkey.pem;
+
+    <span class="hljs-comment"># Recommended protocol lines (modern + fallback): TLS 1.2 and 1.3</span>
+    <span class="hljs-attribute">ssl_protocols</span> TLSv1.<span class="hljs-number">2</span> TLSv1.<span class="hljs-number">3</span>;
+
+    <span class="hljs-comment"># Prefer server ciphers and use a modern cipher list — use Mozilla's generator for exact string</span>
+    <span class="hljs-attribute">ssl_prefer_server_ciphers</span> <span class="hljs-literal">on</span>;
+    <span class="hljs-attribute">ssl_ciphers</span> <span class="hljs-string">"ECDHE-ECDSA-AES128-GCM-SHA256:ECDHE-RSA-AES128-GCM-SHA256:\
+                 ECDHE-ECDSA-AES256-GCM-SHA384:ECDHE-RSA-AES256-GCM-SHA384"</span>;
+
+    <span class="hljs-comment"># Session and performance</span>
+    <span class="hljs-attribute">ssl_session_cache</span> shared:SSL:<span class="hljs-number">10m</span>;
+    <span class="hljs-attribute">ssl_session_timeout</span> <span class="hljs-number">1h</span>;
+
+    <span class="hljs-comment"># (Optional) OCSP stapling (requires ssl_trusted_certificate pointing to CA chain)</span>
+    <span class="hljs-attribute">ssl_stapling</span> <span class="hljs-literal">on</span>;
+    <span class="hljs-attribute">ssl_stapling_verify</span> <span class="hljs-literal">on</span>;
+    <span class="hljs-attribute">ssl_trusted_certificate</span> /etc/letsencrypt/live/example.com/chain.pem;
+
+    <span class="hljs-comment"># HTTP security headers</span>
+    <span class="hljs-attribute">add_header</span> Strict-Transport-Security <span class="hljs-string">"max-age=63072000; includeSubDomains; preload"</span> always;
+    <span class="hljs-attribute">add_header</span> X-Frame-Options SAMEORIGIN;
+    <span class="hljs-attribute">add_header</span> X-Content-Type-Options nosniff;
+
+    <span class="hljs-comment"># Your usual root / proxy_pass / index etc</span>
+    <span class="hljs-attribute">root</span> /var/www/example;
+    <span class="hljs-attribute">index</span> index.html index.htm;
+    <span class="hljs-attribute">location</span> / { <span class="hljs-attribute">try_files</span> <span class="hljs-variable">$uri</span> <span class="hljs-variable">$uri</span>/ =<span class="hljs-number">404</span>; }
+}
+</div></code></pre>
+<p><strong>Notes</strong></p>
+<ul>
+<li>Use Mozilla SSL Config Generator to create the precise <code>ssl_ciphers</code>, <code>ssl_protocols</code>, and additional directives matching your OpenSSL/nginx versions and compatibility needs. It's a trusted source for secure configs. (<a href="https://ssl-config.mozilla.org/?utm_source=chatgpt.com" title="Mozilla SSL Configuration Generator">ssl-config.mozilla.org</a>)</li>
+<li>Generate DH params only if you need them (e.g. <code>openssl dhparam -out /etc/ssl/certs/dhparam.pem 2048</code>) and reference in config if desired.</li>
+<li>OCSP stapling requires the server to be able to fetch OCSP responses from the CA (network access) and the <code>ssl_trusted_certificate</code> to be set to the CA chain. See NGINX docs for details. (<a href="https://nginx.org/en/docs/http/configuring_https_servers.html?utm_source=chatgpt.com" title="Configuring HTTPS servers">Nginx</a>)</li>
+</ul>
+<hr>
+<h1 id="4-test-nginx-and-reload">4) Test NGINX and reload</h1>
+<pre class="hljs"><code><div><span class="hljs-comment"># syntax check</span>
+sudo nginx -t
+
+<span class="hljs-comment"># if OK, reload gracefully</span>
+sudo systemctl reload nginx
+</div></code></pre>
+<p>If <code>nginx -t</code> fails, read the error and fix the config before reloading. (NGINX docs cover the directives and examples.) (<a href="https://nginx.org/en/docs/http/configuring_https_servers.html?utm_source=chatgpt.com" title="Configuring HTTPS servers">Nginx</a>)</p>
+<hr>
+<h1 id="5-verification-checklist--commands--what-to-look-for">5) Verification checklist — commands &amp; what to look for</h1>
+<h3 id="51-quick-http---https-check-browser">5.1 Quick HTTP -&gt; HTTPS check (browser)</h3>
+<p>Browse to <code>https://example.com</code> and confirm padlock. Browsers show certificate chain and expiry when you click the lock.</p>
+<h3 id="52-curl--basic-tls-info">5.2 curl — basic TLS info</h3>
+<pre class="hljs"><code><div>curl -I -sS https://example.com/ -o /dev/null -w <span class="hljs-string">"%{url_effective} %{ssl_verify_result} %{ssl_cipher} %{ssl_protocol}\n"</span>
+</div></code></pre>
+<p><code>%{ssl_verify_result}</code> should be <code>0</code> (success). The cipher and protocol show what was negotiated.</p>
+<h3 id="53-openssl-sclient--inspect-cert-and-negotiated-protocol">5.3 openssl s_client — inspect cert and negotiated protocol</h3>
+<pre class="hljs"><code><div>openssl s_client -connect example.com:443 -servername example.com -showcerts
+</div></code></pre>
+<p>Look for:</p>
+<ul>
+<li><code>Verify return code: 0 (ok)</code> — certificate chain validates locally.</li>
+<li><code>Protocol  : TLSv1.3</code> (or TLSv1.2) — negotiated protocol.</li>
+<li>Certificate details and chain printed above. Use <code>-cipher</code> to test specific ciphers. The <code>-servername</code> flag sends SNI for name-based virtual hosts. (OpenSSL <code>s_client</code> is the canonical CLI tester.) (<a href="https://docs.oracle.com/cd/E19146-01/821-1836/gedks/index.html?utm_source=chatgpt.com" title="Issuing Test Request to an SSL Server">Oracle Docs</a>)</li>
+</ul>
+<h3 id="54-check-ocsp-stapling-if-enabled">5.4 check OCSP stapling (if enabled)</h3>
+<p>From <code>openssl s_client</code> output, when stapling works you’ll see <code>OCSP Response:</code> content and <code>verify return:...</code> entries. If not, check NGINX error log and ensure the server can reach CA OCSP servers and <code>ssl_trusted_certificate</code> is set. (NGINX docs include stapling notes.) (<a href="https://nginx.org/en/docs/http/configuring_https_servers.html?utm_source=chatgpt.com" title="Configuring HTTPS servers">Nginx</a>)</p>
+<h3 id="55-test-with-an-external-scanner-deep-checks">5.5 Test with an external scanner (deep checks)</h3>
+<ul>
+<li><strong>Qualys SSL Labs</strong> — paste your public hostname into SSL Labs Server Test for a full report (protocols, ciphers, chain, HSTS, certificate, vulnerabilities). This is the most common external verification. (<a href="https://www.ssllabs.com/ssltest/?utm_source=chatgpt.com" title="SSL Server Test (Powered by Qualys SSL Labs)">SSL Labs</a>)</li>
+<li><strong>testssl.sh</strong> or <strong>sslyze</strong> — run from your shell for scripted testing and CI. <code>testssl.sh</code> examines supported protocols, weak ciphers, heartbleed, etc. Many teams run this in CI. (<a href="https://moss.sh/reviews/ssl-labs-server-test-optimization/?utm_source=chatgpt.com" title="SSL Labs Server Test Optimization - MOSS">MOSS</a>)</li>
+</ul>
+<p>Example local run (download <code>testssl.sh</code> and run):</p>
+<pre class="hljs"><code><div>./testssl.sh --fast example.com
+</div></code></pre>
+<hr>
+<h1 id="6-extra-hardening-optional-follow-mozillanginx-guidance">6) Extra hardening (optional, follow Mozilla/NGINX guidance)</h1>
+<ul>
+<li>Disable TLS 1.0 / 1.1 (use TLS 1.2 &amp; 1.3 only).</li>
+<li>Prefer ECDHE ciphers; avoid RC4, DES, 3DES.</li>
+<li>Enable HSTS (<code>Strict-Transport-Security</code>) once confident HTTP-&gt;HTTPS redirect is stable.</li>
+<li>Enable OCSP stapling.</li>
+<li>Use strong certs (RSA 2048+ or ECDSA).</li>
+<li>Keep OpenSSL and NGINX up to date. Mozilla’s Server Side TLS documentation and the NGINX admin guide provide practical recommended settings. (<a href="https://wiki.mozilla.org/Security/Server_Side_TLS?utm_source=chatgpt.com" title="Security/Server Side TLS - MozillaWiki">Mozilla Wiki</a>)</li>
+</ul>
+<hr>
+<h1 id="7-common-troubleshooting">7) Common troubleshooting</h1>
+<ul>
+<li><code>Verify return code: 21</code> or similar from <code>openssl s_client</code> — usually missing intermediate CA; point <code>ssl_trusted_certificate</code> (or provide full chain as <code>ssl_certificate</code> depending on CA).</li>
+<li>Browser says mixed content (insecure HTTP resources) — fix references to load over HTTPS.</li>
+<li>OCSP stapling errors — ensure CA OCSP endpoint reachable and <code>ssl_trusted_certificate</code> contains the chain.</li>
+<li>Old clients can't connect — you may need to accept older ciphers or TLS versions for compatibility (tradeoff: security vs legacy clients). See Mozilla generator to pick a compatibility tier. (<a href="https://ssl-config.mozilla.org/?utm_source=chatgpt.com" title="Mozilla SSL Configuration Generator">ssl-config.mozilla.org</a>)</li>
+</ul>
+<hr>
+<h1 id="8-tldr--minimal-commands-to-go-from-nothing-%E2%86%92-verified-ubuntu-example">8) TL;DR — Minimal commands to go from nothing → verified (Ubuntu example)</h1>
+<pre class="hljs"><code><div><span class="hljs-comment"># 1. Install nginx, certbot</span>
+sudo apt update
+sudo apt install nginx certbot python3-certbot-nginx
+
+<span class="hljs-comment"># 2. Get cert and auto-configure nginx</span>
+sudo certbot --nginx -d example.com -d www.example.com
+
+<span class="hljs-comment"># 3. Test nginx and reload</span>
+sudo nginx -t &amp;&amp; sudo systemctl reload nginx
+
+<span class="hljs-comment"># 4. Basic checks</span>
+curl -I https://example.com
+openssl s_client -connect example.com:443 -servername example.com -showcerts
+
+<span class="hljs-comment"># 5. External scan (manual step)</span>
+<span class="hljs-comment"># - Run SSL Labs test at https://www.ssllabs.com/ssltest/ (paste hostname)</span>
+</div></code></pre>
+<p>DigitalOcean’s step-by-step tutorial is a solid walkthrough if you want screenshots/stepwise commands for Ubuntu. (<a href="https://www.digitalocean.com/community/tutorials/how-to-secure-nginx-with-let-s-encrypt-on-ubuntu-20-04?utm_source=chatgpt.com" title="How To Secure Nginx with Let's Encrypt on Ubuntu">DigitalOcean</a>)</p>
+<hr>
+<p><strong>NOTE:</strong> This page is generated with assistance from AI tools.</p>
+<hr>
+
+</body>
+</html>

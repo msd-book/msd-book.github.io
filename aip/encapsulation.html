@@ -1,0 +1,640 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>The MSD Book :: Encapsulation</title>
+<meta http-equiv="Content-type" content="text/html;charset=UTF-8">
+
+<style>
+/* https://github.com/microsoft/vscode/blob/master/extensions/markdown-language-features/media/markdown.css */
+/*---------------------------------------------------------------------------------------------
+ *  Copyright (c) Microsoft Corporation. All rights reserved.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
+ *--------------------------------------------------------------------------------------------*/
+
+body {
+	font-family: var(--vscode-markdown-font-family, -apple-system, BlinkMacSystemFont, "Segoe WPC", "Segoe UI", "Ubuntu", "Droid Sans", sans-serif);
+	font-size: var(--vscode-markdown-font-size, 14px);
+	padding: 0 26px;
+	line-height: var(--vscode-markdown-line-height, 22px);
+	word-wrap: break-word;
+}
+
+#code-csp-warning {
+	position: fixed;
+	top: 0;
+	right: 0;
+	color: white;
+	margin: 16px;
+	text-align: center;
+	font-size: 12px;
+	font-family: sans-serif;
+	background-color:#444444;
+	cursor: pointer;
+	padding: 6px;
+	box-shadow: 1px 1px 1px rgba(0,0,0,.25);
+}
+
+#code-csp-warning:hover {
+	text-decoration: none;
+	background-color:#007acc;
+	box-shadow: 2px 2px 2px rgba(0,0,0,.25);
+}
+
+body.scrollBeyondLastLine {
+	margin-bottom: calc(100vh - 22px);
+}
+
+body.showEditorSelection .code-line {
+	position: relative;
+}
+
+body.showEditorSelection .code-active-line:before,
+body.showEditorSelection .code-line:hover:before {
+	content: "";
+	display: block;
+	position: absolute;
+	top: 0;
+	left: -12px;
+	height: 100%;
+}
+
+body.showEditorSelection li.code-active-line:before,
+body.showEditorSelection li.code-line:hover:before {
+	left: -30px;
+}
+
+.vscode-light.showEditorSelection .code-active-line:before {
+	border-left: 3px solid rgba(0, 0, 0, 0.15);
+}
+
+.vscode-light.showEditorSelection .code-line:hover:before {
+	border-left: 3px solid rgba(0, 0, 0, 0.40);
+}
+
+.vscode-light.showEditorSelection .code-line .code-line:hover:before {
+	border-left: none;
+}
+
+.vscode-dark.showEditorSelection .code-active-line:before {
+	border-left: 3px solid rgba(255, 255, 255, 0.4);
+}
+
+.vscode-dark.showEditorSelection .code-line:hover:before {
+	border-left: 3px solid rgba(255, 255, 255, 0.60);
+}
+
+.vscode-dark.showEditorSelection .code-line .code-line:hover:before {
+	border-left: none;
+}
+
+.vscode-high-contrast.showEditorSelection .code-active-line:before {
+	border-left: 3px solid rgba(255, 160, 0, 0.7);
+}
+
+.vscode-high-contrast.showEditorSelection .code-line:hover:before {
+	border-left: 3px solid rgba(255, 160, 0, 1);
+}
+
+.vscode-high-contrast.showEditorSelection .code-line .code-line:hover:before {
+	border-left: none;
+}
+
+img {
+	max-width: 100%;
+	max-height: 100%;
+}
+
+a {
+	text-decoration: none;
+}
+
+a:hover {
+	text-decoration: underline;
+}
+
+a:focus,
+input:focus,
+select:focus,
+textarea:focus {
+	outline: 1px solid -webkit-focus-ring-color;
+	outline-offset: -1px;
+}
+
+hr {
+	border: 0;
+	height: 2px;
+	border-bottom: 2px solid;
+}
+
+h1 {
+	padding-bottom: 0.3em;
+	line-height: 1.2;
+	border-bottom-width: 1px;
+	border-bottom-style: solid;
+}
+
+h1, h2, h3 {
+	font-weight: normal;
+}
+
+table {
+	border-collapse: collapse;
+}
+
+table > thead > tr > th {
+	text-align: left;
+	border-bottom: 1px solid;
+}
+
+table > thead > tr > th,
+table > thead > tr > td,
+table > tbody > tr > th,
+table > tbody > tr > td {
+	padding: 5px 10px;
+}
+
+table > tbody > tr + tr > td {
+	border-top: 1px solid;
+}
+
+blockquote {
+	margin: 0 7px 0 5px;
+	padding: 0 16px 0 10px;
+	border-left-width: 5px;
+	border-left-style: solid;
+}
+
+code {
+	font-family: Menlo, Monaco, Consolas, "Droid Sans Mono", "Courier New", monospace, "Droid Sans Fallback";
+	font-size: 1em;
+	line-height: 1.357em;
+}
+
+body.wordWrap pre {
+	white-space: pre-wrap;
+}
+
+pre:not(.hljs),
+pre.hljs code > div {
+	padding: 16px;
+	border-radius: 3px;
+	overflow: auto;
+}
+
+pre code {
+	color: var(--vscode-editor-foreground);
+	tab-size: 4;
+}
+
+/** Theming */
+
+.vscode-light pre {
+	background-color: rgba(220, 220, 220, 0.4);
+}
+
+.vscode-dark pre {
+	background-color: rgba(10, 10, 10, 0.4);
+}
+
+.vscode-high-contrast pre {
+	background-color: rgb(0, 0, 0);
+}
+
+.vscode-high-contrast h1 {
+	border-color: rgb(0, 0, 0);
+}
+
+.vscode-light table > thead > tr > th {
+	border-color: rgba(0, 0, 0, 0.69);
+}
+
+.vscode-dark table > thead > tr > th {
+	border-color: rgba(255, 255, 255, 0.69);
+}
+
+.vscode-light h1,
+.vscode-light hr,
+.vscode-light table > tbody > tr + tr > td {
+	border-color: rgba(0, 0, 0, 0.18);
+}
+
+.vscode-dark h1,
+.vscode-dark hr,
+.vscode-dark table > tbody > tr + tr > td {
+	border-color: rgba(255, 255, 255, 0.18);
+}
+
+</style>
+
+<style>
+/* Tomorrow Theme */
+/* http://jmblog.github.com/color-themes-for-google-code-highlightjs */
+/* Original theme - https://github.com/chriskempson/tomorrow-theme */
+
+/* Tomorrow Comment */
+.hljs-comment,
+.hljs-quote {
+	color: #8e908c;
+}
+
+/* Tomorrow Red */
+.hljs-variable,
+.hljs-template-variable,
+.hljs-tag,
+.hljs-name,
+.hljs-selector-id,
+.hljs-selector-class,
+.hljs-regexp,
+.hljs-deletion {
+	color: #c82829;
+}
+
+/* Tomorrow Orange */
+.hljs-number,
+.hljs-built_in,
+.hljs-builtin-name,
+.hljs-literal,
+.hljs-type,
+.hljs-params,
+.hljs-meta,
+.hljs-link {
+	color: #f5871f;
+}
+
+/* Tomorrow Yellow */
+.hljs-attribute {
+	color: #eab700;
+}
+
+/* Tomorrow Green */
+.hljs-string,
+.hljs-symbol,
+.hljs-bullet,
+.hljs-addition {
+	color: #718c00;
+}
+
+/* Tomorrow Blue */
+.hljs-title,
+.hljs-section {
+	color: #4271ae;
+}
+
+/* Tomorrow Purple */
+.hljs-keyword,
+.hljs-selector-tag {
+	color: #8959a8;
+}
+
+.hljs {
+	display: block;
+	overflow-x: auto;
+	color: #4d4d4c;
+	padding: 0.5em;
+}
+
+.hljs-emphasis {
+	font-style: italic;
+}
+
+.hljs-strong {
+	font-weight: bold;
+}
+</style>
+
+<style>
+/*
+ * Markdown PDF CSS
+ */
+
+ body {
+	font-family: -apple-system, BlinkMacSystemFont, "Segoe WPC", "Segoe UI", "Ubuntu", "Droid Sans", sans-serif, "Meiryo";
+	padding: 0 12px;
+}
+
+pre {
+	background-color: #f8f8f8;
+	border: 1px solid #cccccc;
+	border-radius: 3px;
+	overflow-x: auto;
+	white-space: pre-wrap;
+	overflow-wrap: break-word;
+}
+
+pre:not(.hljs) {
+	padding: 23px;
+	line-height: 19px;
+}
+
+blockquote {
+	background: rgba(127, 127, 127, 0.1);
+	border-color: rgba(0, 122, 204, 0.5);
+}
+
+.emoji {
+	height: 1.4em;
+}
+
+code {
+	font-size: 14px;
+	line-height: 19px;
+}
+
+/* for inline code */
+:not(pre):not(.hljs) > code {
+	color: #C9AE75; /* Change the old color so it seems less like an error */
+	font-size: inherit;
+}
+
+/* Page Break : use <div class="page"/> to insert page break
+-------------------------------------------------------- */
+.page {
+	page-break-after: always;
+}
+
+</style>
+
+<script src="https://unpkg.com/mermaid/dist/mermaid.min.js"></script>
+</head>
+<body>
+  <script>
+    mermaid.initialize({
+      startOnLoad: true,
+      theme: document.body.classList.contains('vscode-dark') || document.body.classList.contains('vscode-high-contrast')
+          ? 'dark'
+          : 'default'
+    });
+  </script>
+<p>
+    <img src="msd-book-front.png" 
+    alt="The MSD Book" width="200" style="float: left; margin: 0 1rem 1rem 0;"/>
+    
+    We will break encapsulation down practically, then refactor a small, ready-to-run C# module so you can see the before/after and why it matters.</p>
+<h1 id="what-is-encapsulation-short">What is encapsulation (short)</h1>
+<p>Encapsulation means <em>hide the internal details</em> of a component and expose a minimal, intention-revealing surface (methods/properties). Consumers talk to behavior (what it does), not state (how it stores it). That makes code easier to reason about, safer to change, and harder to misuse.</p>
+<h1 id="why-it-matters-practical-benefits">Why it matters (practical benefits)</h1>
+<ul>
+<li><strong>Maintain invariants</strong>: enforce rules (e.g., balance &gt;= 0) in one place.</li>
+<li><strong>Reduce coupling</strong>: callers depend on an interface/behavior, not on internal fields.</li>
+<li><strong>Safer refactor</strong>: change representation (e.g., single balance -&gt; ledger) without breaking callers.</li>
+<li><strong>Security &amp; correctness</strong>: prevents invalid states or unauthorized mutation.</li>
+<li><strong>Testability</strong>: easier to mock/stub behavior rather than internal fields.</li>
+<li><strong>Clearer API</strong>: callers read <code>account.Withdraw(100)</code> not <code>account.Balance -= 100</code>.</li>
+</ul>
+<h1 id="where-to-apply-practical-hotspots">Where to apply (practical hotspots)</h1>
+<ul>
+<li>Domain entities (models)</li>
+<li>Modules and components with internal state (caches, connection pools)</li>
+<li>Public libraries / SDKs / services (APIs)</li>
+<li>Any mutable collection: expose read-only views or iterators</li>
+<li>Concurrency boundaries: keep mutation internal and synchronized</li>
+</ul>
+<h1 id="how-to-apply-concrete-techniques">How to apply (concrete techniques)</h1>
+<ul>
+<li>Use <code>private</code>/<code>protected</code> fields; expose <code>public</code> methods or read-only properties.</li>
+<li>Expose behavior, not state. Prefer <code>Deposit(amount)</code> over <code>Balance += amount</code>.</li>
+<li>Validate inputs in the object methods to preserve invariants.</li>
+<li>For collections, return <code>IReadOnlyList&lt;T&gt;</code> or a copy instead of <code>List&lt;T&gt;</code>.</li>
+<li>Use interfaces to separate contract from implementation.</li>
+<li>Consider immutability for value objects.</li>
+<li>Keep side effects inside the class; avoid exposing mutable internals.</li>
+</ul>
+<hr>
+<h1 id="concrete-c-example--ready-to-run">Concrete C# example — ready to run</h1>
+<p>Below is a small program you can paste into a single <code>Program.cs</code> (C# 10 / .NET 6+). First the <strong>before</strong> (violates encapsulation), then the <strong>after</strong> (encapsulated). Each snippet is a full program showing the problem and then the refactor.</p>
+<hr>
+<h2 id="before--poor-encapsulation">Before — poor encapsulation</h2>
+<p>Problems shown:</p>
+<ul>
+<li><code>Balance</code> is a public field (mutable from outside).</li>
+<li>No central validation: callers directly set/subtract.</li>
+<li>State can become invalid (negative balance) and logic spread across callers.</li>
+</ul>
+<pre class="hljs"><code><div><span class="hljs-comment">// BEFORE: Program.cs</span>
+<span class="hljs-keyword">using</span> System;
+
+<span class="hljs-keyword">namespace</span> <span class="hljs-title">EncapsulationBefore</span>
+{
+    <span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title">BankAccount</span>
+    {
+        <span class="hljs-comment">// BAD: public field — anyone can set it arbitrarily</span>
+        <span class="hljs-keyword">public</span> <span class="hljs-keyword">decimal</span> Balance;
+
+        <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-title">BankAccount</span>(<span class="hljs-params"><span class="hljs-keyword">decimal</span> initial</span>)</span>
+        {
+            Balance = initial;
+        }
+    }
+
+    <span class="hljs-keyword">class</span> <span class="hljs-title">Program</span>
+    {
+        <span class="hljs-function"><span class="hljs-keyword">static</span> <span class="hljs-keyword">void</span> <span class="hljs-title">Main</span>(<span class="hljs-params"></span>)</span>
+        {
+            <span class="hljs-keyword">var</span> acct = <span class="hljs-keyword">new</span> BankAccount(<span class="hljs-number">100</span>m);
+
+            <span class="hljs-comment">// Caller mutates internal state directly</span>
+            acct.Balance += <span class="hljs-number">50</span>m;     <span class="hljs-comment">// deposit (no validation)</span>
+            Console.WriteLine(<span class="hljs-string">$"Balance after deposit: <span class="hljs-subst">{acct.Balance}</span>"</span>);
+
+            <span class="hljs-comment">// Caller subtracts directly — may lead to negative balance</span>
+            acct.Balance -= <span class="hljs-number">200</span>m;
+            Console.WriteLine(<span class="hljs-string">$"Balance after unsafe withdrawal: <span class="hljs-subst">{acct.Balance}</span>"</span>);
+
+            <span class="hljs-comment">// Caller can set nonsense value</span>
+            acct.Balance = <span class="hljs-number">-10000</span>m;
+            Console.WriteLine(<span class="hljs-string">$"Balance after direct set: <span class="hljs-subst">{acct.Balance}</span>"</span>);
+        }
+    }
+}
+</div></code></pre>
+<p>Run this and you’ll see negative / invalid balances — nothing prevented it.</p>
+<hr>
+<h2 id="after--focused-encapsulation-refactor">After — focused encapsulation refactor</h2>
+<p>What changed:</p>
+<ul>
+<li><code>Balance</code> is private; expose <code>Balance</code> as a read-only property.</li>
+<li>All mutations go through <code>Deposit</code> / <code>Withdraw</code> which validate.</li>
+<li><code>Withdraw</code> returns a result (bool) so caller handles failures instead of forcing state.</li>
+<li>Transaction history is encapsulated and exposed as a read-only copy.</li>
+<li>Small thread-safety via <code>lock</code> (optional but illustrates keeping mutation internal).</li>
+</ul>
+<pre class="hljs"><code><div><span class="hljs-comment">// AFTER: Program.cs</span>
+<span class="hljs-keyword">using</span> System;
+<span class="hljs-keyword">using</span> System.Collections.Generic;
+
+<span class="hljs-keyword">namespace</span> <span class="hljs-title">EncapsulationAfter</span>
+{
+    <span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title">BankAccount</span>
+    {
+        <span class="hljs-comment">// private backing field</span>
+        <span class="hljs-keyword">private</span> <span class="hljs-keyword">decimal</span> _balance;
+        <span class="hljs-keyword">private</span> <span class="hljs-keyword">readonly</span> List&lt;<span class="hljs-keyword">string</span>&gt; _transactions = <span class="hljs-keyword">new</span>();
+
+        <span class="hljs-comment">// Expose read-only balance</span>
+        <span class="hljs-keyword">public</span> <span class="hljs-keyword">decimal</span> Balance
+        {
+            <span class="hljs-keyword">get</span>
+            {
+                <span class="hljs-keyword">lock</span> (_sync) { <span class="hljs-keyword">return</span> _balance; }
+            }
+        }
+
+        <span class="hljs-comment">// Expose a read-only snapshot of transactions</span>
+        <span class="hljs-keyword">public</span> IReadOnlyList&lt;<span class="hljs-keyword">string</span>&gt; Transactions
+        {
+            <span class="hljs-keyword">get</span>
+            {
+                <span class="hljs-keyword">lock</span> (_sync) { <span class="hljs-keyword">return</span> _transactions.AsReadOnly(); }
+            }
+        }
+
+        <span class="hljs-keyword">private</span> <span class="hljs-keyword">readonly</span> <span class="hljs-keyword">object</span> _sync = <span class="hljs-keyword">new</span>();
+
+        <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-title">BankAccount</span>(<span class="hljs-params"><span class="hljs-keyword">decimal</span> initial</span>)</span>
+        {
+            <span class="hljs-keyword">if</span> (initial &lt; <span class="hljs-number">0</span>) <span class="hljs-keyword">throw</span> <span class="hljs-keyword">new</span> ArgumentException(<span class="hljs-string">"Initial balance must be &gt;= 0"</span>, <span class="hljs-keyword">nameof</span>(initial));
+            _balance = initial;
+            _transactions.Add(<span class="hljs-string">$"Account opened with <span class="hljs-subst">{initial:C}</span>"</span>);
+        }
+
+        <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title">Deposit</span>(<span class="hljs-params"><span class="hljs-keyword">decimal</span> amount</span>)</span>
+        {
+            <span class="hljs-keyword">if</span> (amount &lt;= <span class="hljs-number">0</span>) <span class="hljs-keyword">throw</span> <span class="hljs-keyword">new</span> ArgumentException(<span class="hljs-string">"Deposit amount must be positive"</span>, <span class="hljs-keyword">nameof</span>(amount));
+
+            <span class="hljs-keyword">lock</span> (_sync)
+            {
+                _balance += amount;
+                _transactions.Add(<span class="hljs-string">$"Deposit <span class="hljs-subst">{amount:C}</span> -&gt; balance <span class="hljs-subst">{_balance:C}</span>"</span>);
+            }
+        }
+
+        <span class="hljs-comment">// TryWithdraw returns success/failure instead of leaving caller to mutate state</span>
+        <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">bool</span> <span class="hljs-title">TryWithdraw</span>(<span class="hljs-params"><span class="hljs-keyword">decimal</span> amount</span>)</span>
+        {
+            <span class="hljs-keyword">if</span> (amount &lt;= <span class="hljs-number">0</span>) <span class="hljs-keyword">throw</span> <span class="hljs-keyword">new</span> ArgumentException(<span class="hljs-string">"Withdrawal amount must be positive"</span>, <span class="hljs-keyword">nameof</span>(amount));
+
+            <span class="hljs-keyword">lock</span> (_sync)
+            {
+                <span class="hljs-keyword">if</span> (_balance &lt; amount)
+                {
+                    _transactions.Add(<span class="hljs-string">$"Failed withdrawal <span class="hljs-subst">{amount:C}</span> (insufficient funds)"</span>);
+                    <span class="hljs-keyword">return</span> <span class="hljs-literal">false</span>;
+                }
+
+                _balance -= amount;
+                _transactions.Add(<span class="hljs-string">$"Withdraw <span class="hljs-subst">{amount:C}</span> -&gt; balance <span class="hljs-subst">{_balance:C}</span>"</span>);
+                <span class="hljs-keyword">return</span> <span class="hljs-literal">true</span>;
+            }
+        }
+
+        <span class="hljs-comment">// Example of exposing a domain operation instead of raw state mutation</span>
+        <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">bool</span> <span class="hljs-title">TransferTo</span>(<span class="hljs-params">BankAccount target, <span class="hljs-keyword">decimal</span> amount</span>)</span>
+        {
+            <span class="hljs-keyword">if</span> (target == <span class="hljs-literal">null</span>) <span class="hljs-keyword">throw</span> <span class="hljs-keyword">new</span> ArgumentNullException(<span class="hljs-keyword">nameof</span>(target));
+            <span class="hljs-keyword">if</span> (amount &lt;= <span class="hljs-number">0</span>) <span class="hljs-keyword">throw</span> <span class="hljs-keyword">new</span> ArgumentException(<span class="hljs-string">"Transfer amount must be positive"</span>, <span class="hljs-keyword">nameof</span>(amount));
+
+            <span class="hljs-comment">// Simple ordering to avoid deadlocks if multiple transfers happen concurrently</span>
+            <span class="hljs-keyword">var</span> locks = GetLockOrder(<span class="hljs-keyword">this</span>, target);
+            <span class="hljs-keyword">lock</span> (locks.Item1)
+            {
+                <span class="hljs-keyword">lock</span> (locks.Item2)
+                {
+                    <span class="hljs-keyword">if</span> (_balance &lt; amount)
+                    {
+                        _transactions.Add(<span class="hljs-string">$"Failed transfer <span class="hljs-subst">{amount:C}</span> -&gt; target (insufficient)"</span>);
+                        <span class="hljs-keyword">return</span> <span class="hljs-literal">false</span>;
+                    }
+
+                    _balance -= amount;
+                    target._balance += amount;
+
+                    _transactions.Add(<span class="hljs-string">$"Transfered <span class="hljs-subst">{amount:C}</span> -&gt; target"</span>);
+                    target._transactions.Add(<span class="hljs-string">$"Received transfer <span class="hljs-subst">{amount:C}</span> from source"</span>);
+                    <span class="hljs-keyword">return</span> <span class="hljs-literal">true</span>;
+                }
+            }
+        }
+
+        <span class="hljs-function"><span class="hljs-keyword">private</span> <span class="hljs-title">static</span> (<span class="hljs-params"><span class="hljs-keyword">object</span>, <span class="hljs-keyword">object</span></span>) <span class="hljs-title">GetLockOrder</span>(<span class="hljs-params">BankAccount a, BankAccount b</span>)</span>
+        {
+            <span class="hljs-comment">// deterministic order to avoid lock inversion</span>
+            <span class="hljs-keyword">return</span> (a.GetHashCode() &lt; b.GetHashCode()) ? (a._sync, b._sync) : (b._sync, a._sync);
+        }
+    }
+
+    <span class="hljs-keyword">class</span> <span class="hljs-title">Program</span>
+    {
+        <span class="hljs-function"><span class="hljs-keyword">static</span> <span class="hljs-keyword">void</span> <span class="hljs-title">Main</span>(<span class="hljs-params"></span>)</span>
+        {
+            <span class="hljs-keyword">var</span> alice = <span class="hljs-keyword">new</span> BankAccount(<span class="hljs-number">100</span>m);
+            <span class="hljs-keyword">var</span> bob = <span class="hljs-keyword">new</span> BankAccount(<span class="hljs-number">50</span>m);
+
+            alice.Deposit(<span class="hljs-number">25</span>m);
+            Console.WriteLine(<span class="hljs-string">$"Alice balance after deposit: <span class="hljs-subst">{alice.Balance:C}</span>"</span>);
+
+            <span class="hljs-keyword">bool</span> withdrew = alice.TryWithdraw(<span class="hljs-number">200</span>m);
+            Console.WriteLine(<span class="hljs-string">$"Attempted over-withdraw: success=<span class="hljs-subst">{withdrew}</span>, balance=<span class="hljs-subst">{alice.Balance:C}</span>"</span>);
+
+            <span class="hljs-keyword">bool</span> success = alice.TryWithdraw(<span class="hljs-number">50</span>m);
+            Console.WriteLine(<span class="hljs-string">$"Attempted withdraw 50: success=<span class="hljs-subst">{success}</span>, balance=<span class="hljs-subst">{alice.Balance:C}</span>"</span>);
+
+            <span class="hljs-comment">// Transfer encapsulates both sides and validates</span>
+            <span class="hljs-keyword">var</span> transferred = alice.TransferTo(bob, <span class="hljs-number">30</span>m);
+            Console.WriteLine(<span class="hljs-string">$"Transfer 30 from Alice to Bob: <span class="hljs-subst">{transferred}</span>"</span>);
+            Console.WriteLine(<span class="hljs-string">$"Alice balance: <span class="hljs-subst">{alice.Balance:C}</span>"</span>);
+            Console.WriteLine(<span class="hljs-string">$"Bob balance: <span class="hljs-subst">{bob.Balance:C}</span>"</span>);
+
+            Console.WriteLine(<span class="hljs-string">"\nAlice transactions:"</span>);
+            <span class="hljs-keyword">foreach</span> (<span class="hljs-keyword">var</span> t <span class="hljs-keyword">in</span> alice.Transactions) Console.WriteLine(<span class="hljs-string">" - "</span> + t);
+
+            Console.WriteLine(<span class="hljs-string">"\nBob transactions:"</span>);
+            <span class="hljs-keyword">foreach</span> (<span class="hljs-keyword">var</span> t <span class="hljs-keyword">in</span> bob.Transactions) Console.WriteLine(<span class="hljs-string">" - "</span> + t);
+        }
+    }
+}
+</div></code></pre>
+<p><strong>Notes on the after-version</strong></p>
+<ul>
+<li>External code can’t make the account invalid because all state changes happen inside validated methods.</li>
+<li><code>Balance</code> is read-only from the outside — callers can inspect but not mutate.</li>
+<li><code>TryWithdraw</code> gives callers a clear contract for failure handling instead of letting them corrupt state.</li>
+<li><code>Transactions</code> returned as <code>IReadOnlyList&lt;string&gt;</code> prevents external mutation of the internal list.</li>
+<li><code>TransferTo</code> demonstrates encapsulating multi-object operations safely (and shows a simple lock-ordering strategy).</li>
+</ul>
+<hr>
+<h1 id="practical-refactor-steps-you-can-follow-mini-recipe">Practical refactor steps you can follow (mini recipe)</h1>
+<ol>
+<li><strong>Identify public mutable fields and <code>public</code> setters</strong> — make them private or remove setters.</li>
+<li><strong>Expose behavior methods</strong> for meaningful operations (e.g., <code>Deposit</code>, <code>TryWithdraw</code>, <code>AddItem</code>).</li>
+<li><strong>Centralize validation</strong> in those behavior methods and throw or return explicit results.</li>
+<li><strong>Replace returning internal collections</strong> with <code>IReadOnly...</code> or copies.</li>
+<li><strong>Add thread-safety only inside the encapsulated module</strong> (if required).</li>
+<li><strong>Write small unit tests</strong> exercising the public API and invariants — helps detect leakage.</li>
+<li><strong>Iterate</strong>: if a caller needs new functionality, add a method with a clear contract rather than exposing internals.</li>
+</ol>
+<hr>
+<h1 id="lint-style-checklist-for-code-reviews-short-copy-pasteable">Lint-style checklist for code reviews (short, copy-pasteable)</h1>
+<ul>
+<li>Fields: <code>Are there any public fields?</code> — public fields should be avoided; use private backing with properties.</li>
+<li>Property setters: <code>Does any property expose a public setter for internal state that should be controlled?</code> — prefer private/protected setters or read-only properties.</li>
+<li>Validation: <code>Are invariants validated centrally inside the class methods (not at every call site)?</code></li>
+<li>Collections: <code>Do public APIs return mutable collections?</code> — return <code>IReadOnlyList&lt;T&gt;</code> / <code>IEnumerable&lt;T&gt;</code> or a defensive copy.</li>
+<li>Behavior vs state: <code>Is behavior exposed instead of raw state?</code> (e.g., <code>Deposit()</code> vs <code>Balance += x</code>).</li>
+<li>Encapsulation leaks: <code>Are private fields referenced/modified outside the class (friend assemblies aside)?</code></li>
+<li>Error handling: <code>Do methods provide clear failure signals instead of letting callers place the object into invalid state?</code> (e.g., <code>TryX</code> pattern, exceptions where appropriate).</li>
+<li>Thread-safety: <code>If object is shared across threads, is mutation safely encapsulated?</code> (locking, concurrent collections).</li>
+<li>API minimality: <code>Is the public surface minimal and intention-revealing?</code> (remove unnecessary getters/setters)</li>
+<li>Tests: <code>Is there a unit test that enforces invariants / invalid scenarios?</code></li>
+</ul>
+<hr>
+<h1 id="final-notes--trade-offs">Final notes / trade-offs</h1>
+<ul>
+<li>Encapsulation sometimes adds small wrapper methods; that's good — it centralizes rules.</li>
+<li>Over-encapsulation can be painful if you create a huge wrapper for trivial types; use judgment. For plain data-transfer objects (DTOs) used only for serialization, public fields/properties are acceptable.</li>
+<li>Prefer exposing <em>what</em> matters, not <em>how</em> it's stored.</li>
+</ul>
+<hr>
+<p><strong>NOTE:</strong> This page is generated with assistance from AI tools.</p>
+
+</body>
+</html>
