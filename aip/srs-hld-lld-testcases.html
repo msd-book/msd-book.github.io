@@ -1,0 +1,1609 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>The MSD Book :: Example SRS, Test Cases, HLD and LLD</title>
+<meta http-equiv="Content-type" content="text/html;charset=UTF-8">
+
+<style>
+/* https://github.com/microsoft/vscode/blob/master/extensions/markdown-language-features/media/markdown.css */
+/*---------------------------------------------------------------------------------------------
+ *  Copyright (c) Microsoft Corporation. All rights reserved.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
+ *--------------------------------------------------------------------------------------------*/
+
+body {
+	font-family: var(--vscode-markdown-font-family, -apple-system, BlinkMacSystemFont, "Segoe WPC", "Segoe UI", "Ubuntu", "Droid Sans", sans-serif);
+	font-size: var(--vscode-markdown-font-size, 14px);
+	padding: 0 26px;
+	line-height: var(--vscode-markdown-line-height, 22px);
+	word-wrap: break-word;
+}
+
+#code-csp-warning {
+	position: fixed;
+	top: 0;
+	right: 0;
+	color: white;
+	margin: 16px;
+	text-align: center;
+	font-size: 12px;
+	font-family: sans-serif;
+	background-color:#444444;
+	cursor: pointer;
+	padding: 6px;
+	box-shadow: 1px 1px 1px rgba(0,0,0,.25);
+}
+
+#code-csp-warning:hover {
+	text-decoration: none;
+	background-color:#007acc;
+	box-shadow: 2px 2px 2px rgba(0,0,0,.25);
+}
+
+body.scrollBeyondLastLine {
+	margin-bottom: calc(100vh - 22px);
+}
+
+body.showEditorSelection .code-line {
+	position: relative;
+}
+
+body.showEditorSelection .code-active-line:before,
+body.showEditorSelection .code-line:hover:before {
+	content: "";
+	display: block;
+	position: absolute;
+	top: 0;
+	left: -12px;
+	height: 100%;
+}
+
+body.showEditorSelection li.code-active-line:before,
+body.showEditorSelection li.code-line:hover:before {
+	left: -30px;
+}
+
+.vscode-light.showEditorSelection .code-active-line:before {
+	border-left: 3px solid rgba(0, 0, 0, 0.15);
+}
+
+.vscode-light.showEditorSelection .code-line:hover:before {
+	border-left: 3px solid rgba(0, 0, 0, 0.40);
+}
+
+.vscode-light.showEditorSelection .code-line .code-line:hover:before {
+	border-left: none;
+}
+
+.vscode-dark.showEditorSelection .code-active-line:before {
+	border-left: 3px solid rgba(255, 255, 255, 0.4);
+}
+
+.vscode-dark.showEditorSelection .code-line:hover:before {
+	border-left: 3px solid rgba(255, 255, 255, 0.60);
+}
+
+.vscode-dark.showEditorSelection .code-line .code-line:hover:before {
+	border-left: none;
+}
+
+.vscode-high-contrast.showEditorSelection .code-active-line:before {
+	border-left: 3px solid rgba(255, 160, 0, 0.7);
+}
+
+.vscode-high-contrast.showEditorSelection .code-line:hover:before {
+	border-left: 3px solid rgba(255, 160, 0, 1);
+}
+
+.vscode-high-contrast.showEditorSelection .code-line .code-line:hover:before {
+	border-left: none;
+}
+
+img {
+	max-width: 100%;
+	max-height: 100%;
+}
+
+a {
+	text-decoration: none;
+}
+
+a:hover {
+	text-decoration: underline;
+}
+
+a:focus,
+input:focus,
+select:focus,
+textarea:focus {
+	outline: 1px solid -webkit-focus-ring-color;
+	outline-offset: -1px;
+}
+
+hr {
+	border: 0;
+	height: 2px;
+	border-bottom: 2px solid;
+}
+
+h1 {
+	padding-bottom: 0.3em;
+	line-height: 1.2;
+	border-bottom-width: 1px;
+	border-bottom-style: solid;
+}
+
+h1, h2, h3 {
+	font-weight: normal;
+}
+
+table {
+	border-collapse: collapse;
+}
+
+table > thead > tr > th {
+	text-align: left;
+	border-bottom: 1px solid;
+}
+
+table > thead > tr > th,
+table > thead > tr > td,
+table > tbody > tr > th,
+table > tbody > tr > td {
+	padding: 5px 10px;
+}
+
+table > tbody > tr + tr > td {
+	border-top: 1px solid;
+}
+
+blockquote {
+	margin: 0 7px 0 5px;
+	padding: 0 16px 0 10px;
+	border-left-width: 5px;
+	border-left-style: solid;
+}
+
+code {
+	font-family: Menlo, Monaco, Consolas, "Droid Sans Mono", "Courier New", monospace, "Droid Sans Fallback";
+	font-size: 1em;
+	line-height: 1.357em;
+}
+
+body.wordWrap pre {
+	white-space: pre-wrap;
+}
+
+pre:not(.hljs),
+pre.hljs code > div {
+	padding: 16px;
+	border-radius: 3px;
+	overflow: auto;
+}
+
+pre code {
+	color: var(--vscode-editor-foreground);
+	tab-size: 4;
+}
+
+/** Theming */
+
+.vscode-light pre {
+	background-color: rgba(220, 220, 220, 0.4);
+}
+
+.vscode-dark pre {
+	background-color: rgba(10, 10, 10, 0.4);
+}
+
+.vscode-high-contrast pre {
+	background-color: rgb(0, 0, 0);
+}
+
+.vscode-high-contrast h1 {
+	border-color: rgb(0, 0, 0);
+}
+
+.vscode-light table > thead > tr > th {
+	border-color: rgba(0, 0, 0, 0.69);
+}
+
+.vscode-dark table > thead > tr > th {
+	border-color: rgba(255, 255, 255, 0.69);
+}
+
+.vscode-light h1,
+.vscode-light hr,
+.vscode-light table > tbody > tr + tr > td {
+	border-color: rgba(0, 0, 0, 0.18);
+}
+
+.vscode-dark h1,
+.vscode-dark hr,
+.vscode-dark table > tbody > tr + tr > td {
+	border-color: rgba(255, 255, 255, 0.18);
+}
+
+</style>
+
+<style>
+/* Tomorrow Theme */
+/* http://jmblog.github.com/color-themes-for-google-code-highlightjs */
+/* Original theme - https://github.com/chriskempson/tomorrow-theme */
+
+/* Tomorrow Comment */
+.hljs-comment,
+.hljs-quote {
+	color: #8e908c;
+}
+
+/* Tomorrow Red */
+.hljs-variable,
+.hljs-template-variable,
+.hljs-tag,
+.hljs-name,
+.hljs-selector-id,
+.hljs-selector-class,
+.hljs-regexp,
+.hljs-deletion {
+	color: #c82829;
+}
+
+/* Tomorrow Orange */
+.hljs-number,
+.hljs-built_in,
+.hljs-builtin-name,
+.hljs-literal,
+.hljs-type,
+.hljs-params,
+.hljs-meta,
+.hljs-link {
+	color: #f5871f;
+}
+
+/* Tomorrow Yellow */
+.hljs-attribute {
+	color: #eab700;
+}
+
+/* Tomorrow Green */
+.hljs-string,
+.hljs-symbol,
+.hljs-bullet,
+.hljs-addition {
+	color: #718c00;
+}
+
+/* Tomorrow Blue */
+.hljs-title,
+.hljs-section {
+	color: #4271ae;
+}
+
+/* Tomorrow Purple */
+.hljs-keyword,
+.hljs-selector-tag {
+	color: #8959a8;
+}
+
+.hljs {
+	display: block;
+	overflow-x: auto;
+	color: #4d4d4c;
+	padding: 0.5em;
+}
+
+.hljs-emphasis {
+	font-style: italic;
+}
+
+.hljs-strong {
+	font-weight: bold;
+}
+</style>
+
+<style>
+/*
+ * Markdown PDF CSS
+ */
+
+ body {
+	font-family: -apple-system, BlinkMacSystemFont, "Segoe WPC", "Segoe UI", "Ubuntu", "Droid Sans", sans-serif, "Meiryo";
+	padding: 0 12px;
+}
+
+pre {
+	background-color: #f8f8f8;
+	border: 1px solid #cccccc;
+	border-radius: 3px;
+	overflow-x: auto;
+	white-space: pre-wrap;
+	overflow-wrap: break-word;
+}
+
+pre:not(.hljs) {
+	padding: 23px;
+	line-height: 19px;
+}
+
+blockquote {
+	background: rgba(127, 127, 127, 0.1);
+	border-color: rgba(0, 122, 204, 0.5);
+}
+
+.emoji {
+	height: 1.4em;
+}
+
+code {
+	font-size: 14px;
+	line-height: 19px;
+}
+
+/* for inline code */
+:not(pre):not(.hljs) > code {
+	color: #C9AE75; /* Change the old color so it seems less like an error */
+	font-size: inherit;
+}
+
+/* Page Break : use <div class="page"/> to insert page break
+-------------------------------------------------------- */
+.page {
+	page-break-after: always;
+}
+
+</style>
+
+<script src="https://unpkg.com/mermaid/dist/mermaid.min.js"></script>
+</head>
+<body>
+  <script>
+    mermaid.initialize({
+      startOnLoad: true,
+      theme: document.body.classList.contains('vscode-dark') || document.body.classList.contains('vscode-high-contrast')
+          ? 'dark'
+          : 'default'
+    });
+  </script>
+  <img src="msd-book-front.png" 
+    alt="The MSD Book" width="200" style="float: left; margin: 0 1rem 1rem 0;"/>
+	<br/>
+	<p>I provide below a sample SRS document that outlines the commonly used structure
+and content for such a document.
+	</p><br/><br/>
+
+<h1 id="software-requirements-specification-srs">Software Requirements Specification (SRS)</h1>
+<p><strong>Project:</strong> Online Bookstore (Web Application)
+<strong>Version:</strong> 1.0
+<strong>Date:</strong> 09 Dec 2025</p>
+<hr>
+<h2 id="1-introduction">1. Introduction</h2>
+<h3 id="11-purpose">1.1 Purpose</h3>
+<p>This document specifies the functional and non-functional requirements for an <strong>Online Bookstore</strong> web application.
+It is intended for:</p>
+<ul>
+<li>Developers implementing the system</li>
+<li>Testers validating functionality</li>
+<li>Product owners and stakeholders approving scope</li>
+</ul>
+<hr>
+<h3 id="12-scope">1.2 Scope</h3>
+<p>The system allows users to:</p>
+<ul>
+<li>Browse and search books</li>
+<li>View book details</li>
+<li>Purchase books online</li>
+<li>Track orders</li>
+</ul>
+<p>Out of scope:</p>
+<ul>
+<li>Physical logistics and delivery optimization</li>
+<li>Publisher onboarding workflows</li>
+</ul>
+<hr>
+<h3 id="13-definitions-and-acronyms">1.3 Definitions and Acronyms</h3>
+<ul>
+<li><strong>User</strong>: Any registered customer</li>
+<li><strong>Admin</strong>: Internal staff managing catalog and orders</li>
+<li><strong>SRS</strong>: Software Requirements Specification</li>
+</ul>
+<hr>
+<h2 id="2-overall-description">2. Overall Description</h2>
+<h3 id="21-product-perspective">2.1 Product Perspective</h3>
+<p>The Online Bookstore is a <strong>3-tier web application</strong>:</p>
+<ul>
+<li>Frontend (Web UI)</li>
+<li>Backend API</li>
+<li>Database</li>
+</ul>
+<p>It integrates with:</p>
+<ul>
+<li>Third-party payment gateway</li>
+<li>Email notification service</li>
+</ul>
+<p><strong>Why this matters:</strong>
+This sets <em>context</em>, not implementation details.</p>
+<hr>
+<h3 id="22-user-classes-and-characteristics">2.2 User Classes and Characteristics</h3>
+<table>
+<thead>
+<tr>
+<th>User Type</th>
+<th>Description</th>
+<th>Technical Skill</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Customer</td>
+<td>Buys books online</td>
+<td>Low–Medium</td>
+</tr>
+<tr>
+<td>Admin</td>
+<td>Manages catalog &amp; orders</td>
+<td>Medium</td>
+</tr>
+</tbody>
+</table>
+<hr>
+<h3 id="23-operating-environment">2.3 Operating Environment</h3>
+<ul>
+<li>Web browsers: Chrome, Firefox, Edge (latest 2 versions)</li>
+<li>Backend hosted on Linux servers</li>
+<li>Database: Relational (e.g., PostgreSQL)</li>
+</ul>
+<hr>
+<h3 id="24-constraints">2.4 Constraints</h3>
+<ul>
+<li>Must comply with Indian IT Act for data protection</li>
+<li>Payment processing via PCI-compliant gateway</li>
+<li>Initial release must support up to 10,000 registered users</li>
+</ul>
+<hr>
+<h2 id="3-functional-requirements">3. Functional Requirements</h2>
+<blockquote>
+<p><strong>Rule of thumb:</strong> Functional requirements describe <em>what the system does</em>, not <em>how</em>.</p>
+</blockquote>
+<hr>
+<h3 id="fr-1-user-registration">FR-1: User Registration</h3>
+<p><strong>Description:</strong>
+The system shall allow users to register using email and password.</p>
+<p><strong>Inputs:</strong></p>
+<ul>
+<li>Email</li>
+<li>Password</li>
+</ul>
+<p><strong>Outputs:</strong></p>
+<ul>
+<li>Confirmation email</li>
+<li>User account created</li>
+</ul>
+<p><strong>Acceptance Criteria:</strong></p>
+<ul>
+<li>Email must be unique</li>
+<li>Password must be at least 8 characters</li>
+</ul>
+<hr>
+<h3 id="fr-2-book-search">FR-2: Book Search</h3>
+<p><strong>Description:</strong>
+The system shall allow users to search books by title, author, or ISBN.</p>
+<p><strong>Priority:</strong> High</p>
+<hr>
+<h3 id="fr-3-place-order">FR-3: Place Order</h3>
+<p><strong>Description:</strong>
+The system shall allow a logged-in user to place an order for selected books.</p>
+<p><strong>Preconditions:</strong></p>
+<ul>
+<li>User is authenticated</li>
+<li>Book is in stock</li>
+</ul>
+<p><strong>Postconditions:</strong></p>
+<ul>
+<li>Order is created</li>
+<li>Payment is processed</li>
+<li>Confirmation email is sent</li>
+</ul>
+<hr>
+<h3 id="fr-4-admin-manages-catalog">FR-4: Admin Manages Catalog</h3>
+<p><strong>Description:</strong>
+The system shall allow admins to add, update, or remove books from the catalog.</p>
+<hr>
+<h2 id="4-non-functional-requirements">4. Non-Functional Requirements</h2>
+<blockquote>
+<p>This is where many engineers under-specify.
+These often matter <em>more</em> than features.</p>
+</blockquote>
+<hr>
+<h3 id="41-performance">4.1 Performance</h3>
+<ul>
+<li>Search results shall be returned within <strong>2 seconds</strong> for 95% of requests.</li>
+<li>System shall support <strong>100 concurrent users</strong> without degradation.</li>
+</ul>
+<hr>
+<h3 id="42-security">4.2 Security</h3>
+<ul>
+<li>All passwords must be stored using salted hashing.</li>
+<li>All communication must use HTTPS.</li>
+<li>Users shall not access admin APIs.</li>
+</ul>
+<hr>
+<h3 id="43-availability">4.3 Availability</h3>
+<ul>
+<li>System uptime shall be <strong>99.5%</strong> on a monthly basis.</li>
+</ul>
+<hr>
+<h3 id="44-usability">4.4 Usability</h3>
+<ul>
+<li>A first-time user should be able to place an order in under <strong>5 minutes</strong>.</li>
+<li>Error messages must be clear and actionable.</li>
+</ul>
+<hr>
+<h3 id="45-maintainability">4.5 Maintainability</h3>
+<ul>
+<li>Codebase shall follow modular architecture.</li>
+<li>APIs shall be versioned.</li>
+</ul>
+<hr>
+<h2 id="5-external-interface-requirements">5. External Interface Requirements</h2>
+<h3 id="51-user-interface">5.1 User Interface</h3>
+<ul>
+<li>Web UI with responsive design</li>
+<li>Supports desktop and mobile screens</li>
+</ul>
+<hr>
+<h3 id="52-api-interfaces">5.2 API Interfaces</h3>
+<ul>
+<li>RESTful APIs over HTTPS</li>
+<li>JSON request/response format</li>
+</ul>
+<hr>
+<h3 id="53-third-party-interfaces">5.3 Third-Party Interfaces</h3>
+<ul>
+<li>Payment Gateway API</li>
+<li>Email Service API</li>
+</ul>
+<hr>
+<h2 id="6-assumptions-and-dependencies">6. Assumptions and Dependencies</h2>
+<ul>
+<li>Internet connectivity is available to users</li>
+<li>Payment gateway uptime is outside system control</li>
+</ul>
+<hr>
+<h2 id="7-acceptance-criteria-summary">7. Acceptance Criteria Summary</h2>
+<p>The system is considered acceptable when:</p>
+<ul>
+<li>All functional requirements are implemented</li>
+<li>Non-functional metrics are met in production</li>
+<li>Security and performance tests pass</li>
+</ul>
+<hr>
+<h2 id="what-you-should-learn-from-this-example">What You Should Learn From This Example</h2>
+<ol>
+<li>
+<p><strong>Clarity beats cleverness</strong></p>
+<ul>
+<li>Plain language is preferred over jargon.</li>
+</ul>
+</li>
+<li>
+<p><strong>Separation of concerns</strong></p>
+<ul>
+<li>Requirements ≠ design ≠ implementation.</li>
+</ul>
+</li>
+<li>
+<p><strong>Testability matters</strong></p>
+<ul>
+<li>Good SRS statements can be turned into test cases directly.</li>
+</ul>
+</li>
+<li>
+<p><strong>Non-functional requirements are not optional</strong></p>
+<ul>
+<li>Performance, security, and usability must be explicit.</li>
+</ul>
+</li>
+<li>
+<p><strong>Scope control</strong></p>
+<ul>
+<li>Out-of-scope sections prevent future confusion.</li>
+</ul>
+</li>
+</ol>
+<hr>
+<h1 id="srs-%E2%86%92-test-case-mapping">SRS → Test Case Mapping</h1>
+<p><strong>Project:</strong> Online Bookstore
+<strong>Test Level:</strong> System / Acceptance Testing</p>
+<h2 id="below-is-a-clean-end-to-end-mapping-from-the-srs-to-test-cases-written-the-way-a-qa-or-engineering-team-would-typically-do-it">Below is a <strong>clean, end-to-end mapping from the SRS to test cases</strong>, written the way a QA or engineering team would typically do it.</h2>
+<h2 id="1-traceability-overview-why-this-exists">1. Traceability Overview (Why This Exists)</h2>
+<p>Before individual test cases, teams usually maintain a <strong>Requirements Traceability Matrix (RTM)</strong>.</p>
+<table>
+<thead>
+<tr>
+<th>SRS ID</th>
+<th>Requirement Name</th>
+<th>Test Case IDs</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>FR-1</td>
+<td>User Registration</td>
+<td>TC-REG-01 … TC-REG-05</td>
+</tr>
+<tr>
+<td>FR-2</td>
+<td>Book Search</td>
+<td>TC-SRCH-01 … TC-SRCH-04</td>
+</tr>
+<tr>
+<td>FR-3</td>
+<td>Place Order</td>
+<td>TC-ORD-01 … TC-ORD-06</td>
+</tr>
+<tr>
+<td>FR-4</td>
+<td>Admin Catalog Mgmt</td>
+<td>TC-ADM-01 … TC-ADM-04</td>
+</tr>
+<tr>
+<td>NFR-PERF</td>
+<td>Performance</td>
+<td>TC-PERF-01 … TC-PERF-03</td>
+</tr>
+<tr>
+<td>NFR-SEC</td>
+<td>Security</td>
+<td>TC-SEC-01 … TC-SEC-04</td>
+</tr>
+<tr>
+<td>NFR-USAB</td>
+<td>Usability</td>
+<td>TC-UX-01 … TC-UX-02</td>
+</tr>
+<tr>
+<td>NFR-AVAIL</td>
+<td>Availability</td>
+<td>TC-AVL-01</td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p><strong>Key lesson:</strong>
+If a requirement cannot be mapped to at least one test case, it is incomplete.</p>
+</blockquote>
+<hr>
+<h2 id="2-functional-test-cases">2. Functional Test Cases</h2>
+<h3 id="fr-1-user-registration">FR-1: User Registration</h3>
+<p><strong>Requirement Summary:</strong>
+User can register using email and password. Email must be unique. Password ≥ 8 characters.</p>
+<hr>
+<h3 id="tc-reg-01-successful-user-registration">TC-REG-01: Successful User Registration</h3>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Value</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Requirement</td>
+<td>FR-1</td>
+</tr>
+<tr>
+<td>Description</td>
+<td>Register a new user with valid email and password</td>
+</tr>
+<tr>
+<td>Preconditions</td>
+<td>User does not exist</td>
+</tr>
+<tr>
+<td>Steps</td>
+<td>1. Open registration page<br>2. Enter valid email<br>3. Enter valid password<br>4. Submit</td>
+</tr>
+<tr>
+<td>Expected Result</td>
+<td>User account created and confirmation email sent</td>
+</tr>
+</tbody>
+</table>
+<hr>
+<h3 id="tc-reg-02-duplicate-email-registration">TC-REG-02: Duplicate Email Registration</h3>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Value</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Requirement</td>
+<td>FR-1</td>
+</tr>
+<tr>
+<td>Description</td>
+<td>Prevent registration with existing email</td>
+</tr>
+<tr>
+<td>Steps</td>
+<td>Register using an email already in system</td>
+</tr>
+<tr>
+<td>Expected Result</td>
+<td>Error message: “Email already registered”</td>
+</tr>
+</tbody>
+</table>
+<hr>
+<h3 id="tc-reg-03-password-length-validation">TC-REG-03: Password Length Validation</h3>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Value</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Requirement</td>
+<td>FR-1</td>
+</tr>
+<tr>
+<td>Description</td>
+<td>Reject short passwords</td>
+</tr>
+<tr>
+<td>Steps</td>
+<td>Register with password &lt; 8 characters</td>
+</tr>
+<tr>
+<td>Expected Result</td>
+<td>Validation error shown</td>
+</tr>
+</tbody>
+</table>
+<hr>
+<h3 id="fr-2-book-search">FR-2: Book Search</h3>
+<hr>
+<h3 id="tc-srch-01-search-by-title">TC-SRCH-01: Search by Title</h3>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Value</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Requirement</td>
+<td>FR-2</td>
+</tr>
+<tr>
+<td>Description</td>
+<td>Search books using title</td>
+</tr>
+<tr>
+<td>Steps</td>
+<td>Enter book title in search box</td>
+</tr>
+<tr>
+<td>Expected Result</td>
+<td>Matching books displayed</td>
+</tr>
+</tbody>
+</table>
+<hr>
+<h3 id="tc-srch-02-search-by-author">TC-SRCH-02: Search by Author</h3>
+<table>
+<thead>
+<tr>
+<th>Requirement</th>
+<th>FR-2</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Steps</td>
+<td>Enter author name</td>
+</tr>
+<tr>
+<td>Expected Result</td>
+<td>Books by author listed</td>
+</tr>
+</tbody>
+</table>
+<hr>
+<h3 id="tc-srch-03-no-results-found">TC-SRCH-03: No Results Found</h3>
+<table>
+<thead>
+<tr>
+<th>Requirement</th>
+<th>FR-2</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Steps</td>
+<td>Search for non-existent book</td>
+</tr>
+<tr>
+<td>Expected Result</td>
+<td>“No results found” message.</td>
+</tr>
+</tbody>
+</table>
+<hr>
+<h3 id="fr-3-place-order">FR-3: Place Order</h3>
+<hr>
+<h3 id="tc-ord-01-place-order-successfully">TC-ORD-01: Place Order Successfully</h3>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Value</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Requirement</td>
+<td>FR-3</td>
+</tr>
+<tr>
+<td>Description</td>
+<td>Place order for in-stock book</td>
+</tr>
+<tr>
+<td>Preconditions</td>
+<td>User logged in</td>
+</tr>
+<tr>
+<td>Steps</td>
+<td>Add book to cart → Checkout → Pay</td>
+</tr>
+<tr>
+<td>Expected Result</td>
+<td>Order created and confirmation email sent</td>
+</tr>
+</tbody>
+</table>
+<hr>
+<h3 id="tc-ord-02-order-without-login">TC-ORD-02: Order Without Login</h3>
+<table>
+<thead>
+<tr>
+<th>Requirement</th>
+<th>FR-3</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Steps</td>
+<td>Attempt checkout without login</td>
+</tr>
+<tr>
+<td>Expected Result</td>
+<td>User redirected to login</td>
+</tr>
+</tbody>
+</table>
+<hr>
+<h3 id="tc-ord-03-out-of-stock-book">TC-ORD-03: Out-of-Stock Book</h3>
+<table>
+<thead>
+<tr>
+<th>Requirement</th>
+<th>FR-3</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Steps</td>
+<td>Attempt to order out-of-stock book</td>
+</tr>
+<tr>
+<td>Expected Result</td>
+<td>Error message displayed</td>
+</tr>
+</tbody>
+</table>
+<hr>
+<h3 id="fr-4-admin-manages-catalog">FR-4: Admin Manages Catalog</h3>
+<hr>
+<h3 id="tc-adm-01-admin-adds-book">TC-ADM-01: Admin Adds Book</h3>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Value</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Requirement</td>
+<td>FR-4</td>
+</tr>
+<tr>
+<td>Preconditions</td>
+<td>Admin logged in</td>
+</tr>
+<tr>
+<td>Steps</td>
+<td>Add new book details</td>
+</tr>
+<tr>
+<td>Expected Result</td>
+<td>Book visible in catalog</td>
+</tr>
+</tbody>
+</table>
+<hr>
+<h3 id="tc-adm-02-unauthorized-access">TC-ADM-02: Unauthorized Access</h3>
+<table>
+<thead>
+<tr>
+<th>Requirement</th>
+<th>FR-4</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Steps</td>
+<td>Normal user accesses admin API</td>
+</tr>
+<tr>
+<td>Expected Result</td>
+<td>Access denied</td>
+</tr>
+</tbody>
+</table>
+<hr>
+<h2 id="3-non-functional-test-cases">3. Non-Functional Test Cases</h2>
+<h3 id="performance-nfr-perf">Performance (NFR-PERF)</h3>
+<hr>
+<h3 id="tc-perf-01-search-response-time">TC-PERF-01: Search Response Time</h3>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Value</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Requirement</td>
+<td>NFR-PERF</td>
+</tr>
+<tr>
+<td>Description</td>
+<td>Validate search performance</td>
+</tr>
+<tr>
+<td>Method</td>
+<td>Load testing</td>
+</tr>
+<tr>
+<td>Expected Result</td>
+<td>95% responses &lt; 2 seconds</td>
+</tr>
+</tbody>
+</table>
+<hr>
+<h3 id="tc-perf-02-concurrent-users">TC-PERF-02: Concurrent Users</h3>
+<table>
+<thead>
+<tr>
+<th>Requirement</th>
+<th>NFR-PERF</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Method</td>
+<td>Load test with 100 users</td>
+</tr>
+<tr>
+<td>Expected Result</td>
+<td>No errors or timeouts</td>
+</tr>
+</tbody>
+</table>
+<hr>
+<h3 id="security-nfr-sec">Security (NFR-SEC)</h3>
+<hr>
+<h3 id="tc-sec-01-password-storage">TC-SEC-01: Password Storage</h3>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Value</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Requirement</td>
+<td>NFR-SEC</td>
+</tr>
+<tr>
+<td>Description</td>
+<td>Verify password hashing</td>
+</tr>
+<tr>
+<td>Expected Result</td>
+<td>Password not stored in plaintext</td>
+</tr>
+</tbody>
+</table>
+<hr>
+<h3 id="tc-sec-02-https-enforcement">TC-SEC-02: HTTPS Enforcement</h3>
+<table>
+<thead>
+<tr>
+<th>Requirement</th>
+<th>NFR-SEC</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Steps</td>
+<td>Access system via HTTP</td>
+</tr>
+<tr>
+<td>Expected Result</td>
+<td>Redirect to HTTPS</td>
+</tr>
+</tbody>
+</table>
+<hr>
+<h3 id="usability-nfr-usab">Usability (NFR-USAB)</h3>
+<hr>
+<h3 id="tc-ux-01-time-to-place-order">TC-UX-01: Time to Place Order</h3>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Value</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Requirement</td>
+<td>NFR-USAB</td>
+</tr>
+<tr>
+<td>Description</td>
+<td>Measure first-time user flow</td>
+</tr>
+<tr>
+<td>Expected Result</td>
+<td>Order placed &lt; 5 minutes</td>
+</tr>
+</tbody>
+</table>
+<hr>
+<h3 id="availability-nfr-avail">Availability (NFR-AVAIL)</h3>
+<hr>
+<h3 id="tc-avl-01-uptime-measurement">TC-AVL-01: Uptime Measurement</h3>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Value</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Requirement</td>
+<td>NFR-AVAIL</td>
+</tr>
+<tr>
+<td>Method</td>
+<td>Monitoring</td>
+</tr>
+<tr>
+<td>Expected Result</td>
+<td>≥ 99.5% uptime per month</td>
+</tr>
+</tbody>
+</table>
+<hr>
+<h2 id="4-what-you-should-notice">4. What You Should Notice</h2>
+<ol>
+<li>
+<p><strong>One requirement → many test cases</strong></p>
+<ul>
+<li>Happy path + edge cases + failures.</li>
+</ul>
+</li>
+<li>
+<p><strong>Non-functional requirements are testable</strong></p>
+<ul>
+<li>They need tools, not UI clicks.</li>
+</ul>
+</li>
+<li>
+<p><strong>Clear SRS enables easy testing</strong></p>
+<ul>
+<li>Ambiguous requirements produce weak tests.</li>
+</ul>
+</li>
+<li>
+<p><strong>Traceability is non-negotiable</strong></p>
+<ul>
+<li>Every requirement must be verifiable.</li>
+</ul>
+</li>
+</ol>
+<hr>
+<h2 id="5-simple-rule-to-remember">5. Simple Rule to Remember</h2>
+<blockquote>
+<p>If you can’t write a test case for it,
+<strong>it doesn’t belong in the SRS.</strong></p>
+</blockquote>
+<hr>
+<hr>
+<p>Next, I am giving <strong>industry-style HLD and LLD documents</strong> derived directly from the SRS you saw earlier.
+They are intentionally written for <strong>early-career engineers</strong>: simple but concrete, structured, and traceable back to requirements.</p>
+<p>I’ll also point out <em>what belongs in HLD vs LLD</em> as we go — this separation is something we often struggle with.</p>
+<hr>
+<h1 id="high-level-design-hld">High-Level Design (HLD)</h1>
+<p><strong>Project:</strong> Online Bookstore
+<strong>Version:</strong> 1.0</p>
+<hr>
+<h2 id="1-purpose-of-this-document">1. Purpose of This Document</h2>
+<p>This document describes the <strong>overall system architecture</strong> and <strong>major components</strong> of the Online Bookstore system.
+It explains <em>how the system is structured</em>, not <em>how each class or function is written</em>.</p>
+<blockquote>
+<p><strong>Mental model:</strong>
+HLD answers <em>“What are the big building blocks and how do they talk?”</em></p>
+</blockquote>
+<hr>
+<h2 id="2-system-overview">2. System Overview</h2>
+<h3 id="21-architectural-style">2.1 Architectural Style</h3>
+<ul>
+<li>
+<p><strong>Three-Tier Architecture</strong></p>
+<ul>
+<li>Presentation Layer</li>
+<li>Application (Service) Layer</li>
+<li>Data Layer</li>
+</ul>
+</li>
+</ul>
+<h3 id="22-technology-stack-indicative">2.2 Technology Stack (Indicative)</h3>
+<ul>
+<li>
+<p>Frontend: Web SPA (React / Angular)</p>
+</li>
+<li>
+<p>Backend: REST API (ASP.NET Core / Java Spring)</p>
+</li>
+<li>
+<p>Database: PostgreSQL</p>
+</li>
+<li>
+<p>External Services:</p>
+<ul>
+<li>Payment Gateway</li>
+<li>Email Service</li>
+</ul>
+</li>
+</ul>
+<p><em>(Exact tech can change without violating HLD)</em></p>
+<hr>
+<h2 id="3-high-level-architecture-diagram">3. High-Level Architecture Diagram</h2>
+<pre class="hljs"><code><div>+-------------------+
+|   Web Browser     |
+| (UI / Frontend)   |
++---------+---------+
+          |
+          v
++-------------------+
+|   Backend API     |
+| (Application)     |
++----+----------+---+
+     |          |
+     v          v
++---------+  +----------------+
+| Database|  | External APIs  |
+|         |  | (Payment,Mail) |
++---------+  +----------------+
+</div></code></pre>
+<hr>
+<h2 id="4-major-components">4. Major Components</h2>
+<h3 id="41-presentation-layer">4.1 Presentation Layer</h3>
+<p><strong>Responsibilities</strong></p>
+<ul>
+<li>Render UI screens</li>
+<li>Capture user input</li>
+<li>Call backend APIs</li>
+</ul>
+<p><strong>Key Modules</strong></p>
+<ul>
+<li>Authentication UI</li>
+<li>Book Catalog UI</li>
+<li>Shopping Cart UI</li>
+<li>Admin Dashboard</li>
+</ul>
+<hr>
+<h3 id="42-application-layer">4.2 Application Layer</h3>
+<p><strong>Responsibilities</strong></p>
+<ul>
+<li>Business logic</li>
+<li>Validation</li>
+<li>Authorization</li>
+<li>Orchestration of workflows</li>
+</ul>
+<p><strong>Key Services</strong></p>
+<ul>
+<li>User Service</li>
+<li>Catalog Service</li>
+<li>Order Service</li>
+<li>Payment Service</li>
+<li>Admin Service</li>
+</ul>
+<hr>
+<h3 id="43-data-layer">4.3 Data Layer</h3>
+<p><strong>Responsibilities</strong></p>
+<ul>
+<li>Persistent storage</li>
+<li>Data integrity</li>
+</ul>
+<p><strong>Key Entities</strong></p>
+<ul>
+<li>Users</li>
+<li>Books</li>
+<li>Orders</li>
+<li>OrderItems</li>
+</ul>
+<hr>
+<h2 id="5-data-flow-example-place-order">5. Data Flow (Example: Place Order)</h2>
+<ol>
+<li>
+<p>User clicks “Checkout”</p>
+</li>
+<li>
+<p>Frontend sends request to Order API</p>
+</li>
+<li>
+<p>Order Service:</p>
+<ul>
+<li>Validates user</li>
+<li>Checks stock</li>
+<li>Calls Payment Gateway</li>
+</ul>
+</li>
+<li>
+<p>Order stored in DB</p>
+</li>
+<li>
+<p>Confirmation email sent</p>
+</li>
+</ol>
+<hr>
+<h2 id="6-non-functional-design-decisions">6. Non-Functional Design Decisions</h2>
+<table>
+<thead>
+<tr>
+<th>Quality Attribute</th>
+<th>Design Choice</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Performance</td>
+<td>Indexed search fields</td>
+</tr>
+<tr>
+<td>Security</td>
+<td>JWT-based auth, HTTPS</td>
+</tr>
+<tr>
+<td>Scalability</td>
+<td>Stateless backend</td>
+</tr>
+<tr>
+<td>Maintainability</td>
+<td>Layered architecture</td>
+</tr>
+</tbody>
+</table>
+<hr>
+<h2 id="7-assumptions">7. Assumptions</h2>
+<ul>
+<li>Single region deployment initially</li>
+<li>Payment gateway reliability is external</li>
+</ul>
+<hr>
+<h1 id="low-level-design-lld">Low-Level Design (LLD)</h1>
+<p><strong>Project:</strong> Online Bookstore
+<strong>Version:</strong> 1.0</p>
+<hr>
+<h2 id="1-purpose-of-this-document">1. Purpose of This Document</h2>
+<p>This document provides <strong>detailed design</strong> of individual components, classes, APIs, and database schema.</p>
+<blockquote>
+<p><strong>Mental model:</strong>
+LLD answers <em>“How exactly do we build each part?”</em></p>
+</blockquote>
+<hr>
+<h2 id="2-api-design">2. API Design</h2>
+<h3 id="21-user-registration-api">2.1 User Registration API</h3>
+<p><strong>Endpoint</strong></p>
+<pre class="hljs"><code><div>POST /api/users/register
+</div></code></pre>
+<p><strong>Request</strong></p>
+<pre class="hljs"><code><div>{
+  <span class="hljs-attr">"email"</span>: <span class="hljs-string">"user@example.com"</span>,
+  <span class="hljs-attr">"password"</span>: <span class="hljs-string">"password123"</span>
+}
+</div></code></pre>
+<p><strong>Response</strong></p>
+<pre class="hljs"><code><div>{
+  <span class="hljs-attr">"userId"</span>: <span class="hljs-string">"uuid"</span>,
+  <span class="hljs-attr">"status"</span>: <span class="hljs-string">"REGISTERED"</span>
+}
+</div></code></pre>
+<p><strong>Validations</strong></p>
+<ul>
+<li>Email uniqueness</li>
+<li>Password length ≥ 8</li>
+</ul>
+<hr>
+<h3 id="22-book-search-api">2.2 Book Search API</h3>
+<pre class="hljs"><code><div>GET /api/books?query={text}
+</div></code></pre>
+<p><strong>Behavior</strong></p>
+<ul>
+<li>Search by title, author, ISBN</li>
+<li>Pagination supported</li>
+</ul>
+<hr>
+<h3 id="23-place-order-api">2.3 Place Order API</h3>
+<pre class="hljs"><code><div>POST /api/orders
+</div></code></pre>
+<p><strong>Request</strong></p>
+<pre class="hljs"><code><div>{
+  <span class="hljs-attr">"items"</span>: [
+    { <span class="hljs-attr">"bookId"</span>: <span class="hljs-string">"uuid"</span>, <span class="hljs-attr">"quantity"</span>: <span class="hljs-number">1</span> }
+  ]
+}
+</div></code></pre>
+<p><strong>Steps</strong></p>
+<ol>
+<li>Validate user session</li>
+<li>Validate stock</li>
+<li>Create order</li>
+<li>Initiate payment</li>
+</ol>
+<hr>
+<h2 id="3-database-design">3. Database Design</h2>
+<h3 id="31-users-table">3.1 Users Table</h3>
+<table>
+<thead>
+<tr>
+<th>Column</th>
+<th>Type</th>
+<th>Notes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>id</td>
+<td>UUID</td>
+<td>PK</td>
+</tr>
+<tr>
+<td>email</td>
+<td>VARCHAR</td>
+<td>Unique</td>
+</tr>
+<tr>
+<td>password_hash</td>
+<td>VARCHAR</td>
+<td>Hashed</td>
+</tr>
+<tr>
+<td>role</td>
+<td>ENUM</td>
+<td>USER / ADMIN</td>
+</tr>
+</tbody>
+</table>
+<hr>
+<h3 id="32-books-table">3.2 Books Table</h3>
+<table>
+<thead>
+<tr>
+<th>Column</th>
+<th>Type</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>id</td>
+<td>UUID</td>
+</tr>
+<tr>
+<td>title</td>
+<td>VARCHAR</td>
+</tr>
+<tr>
+<td>author</td>
+<td>VARCHAR</td>
+</tr>
+<tr>
+<td>isbn</td>
+<td>VARCHAR</td>
+</tr>
+<tr>
+<td>price</td>
+<td>DECIMAL</td>
+</tr>
+<tr>
+<td>stock</td>
+<td>INT</td>
+</tr>
+</tbody>
+</table>
+<hr>
+<h3 id="33-orders-table">3.3 Orders Table</h3>
+<table>
+<thead>
+<tr>
+<th>Column</th>
+<th>Type</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>id</td>
+<td>UUID</td>
+</tr>
+<tr>
+<td>user_id</td>
+<td>UUID</td>
+</tr>
+<tr>
+<td>status</td>
+<td>ENUM</td>
+</tr>
+<tr>
+<td>total_amount</td>
+<td>DECIMAL</td>
+</tr>
+<tr>
+<td>created_at</td>
+<td>TIMESTAMP</td>
+</tr>
+</tbody>
+</table>
+<hr>
+<h3 id="34-orderitems-table">3.4 OrderItems Table</h3>
+<table>
+<thead>
+<tr>
+<th>Column</th>
+<th>Type</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>order_id</td>
+<td>UUID</td>
+</tr>
+<tr>
+<td>book_id</td>
+<td>UUID</td>
+</tr>
+<tr>
+<td>quantity</td>
+<td>INT</td>
+</tr>
+</tbody>
+</table>
+<hr>
+<h2 id="4-class-design-backend">4. Class Design (Backend)</h2>
+<h3 id="41-userservice">4.1 UserService</h3>
+<p><strong>Responsibilities</strong></p>
+<ul>
+<li>Register user</li>
+<li>Authenticate user</li>
+</ul>
+<p><strong>Key Methods</strong></p>
+<pre class="hljs"><code><div>registerUser(email, password)
+authenticate(email, password)
+</div></code></pre>
+<hr>
+<h3 id="42-orderservice">4.2 OrderService</h3>
+<p><strong>Responsibilities</strong></p>
+<ul>
+<li>Create orders</li>
+<li>Coordinate payment</li>
+</ul>
+<p><strong>Key Methods</strong></p>
+<pre class="hljs"><code><div>placeOrder(userId, items)
+</div></code></pre>
+<hr>
+<h2 id="5-sequence-flow-place-order">5. Sequence Flow (Place Order)</h2>
+<pre class="hljs"><code><div>User → OrderController
+OrderController → OrderService
+OrderService → InventoryService
+OrderService → PaymentService
+PaymentService → Gateway
+OrderService → OrderRepository
+</div></code></pre>
+<hr>
+<h2 id="6-error-handling-strategy">6. Error Handling Strategy</h2>
+<table>
+<thead>
+<tr>
+<th>Scenario</th>
+<th>Handling</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Invalid input</td>
+<td>400 Bad Request</td>
+</tr>
+<tr>
+<td>Unauthorized</td>
+<td>401 Unauthorized</td>
+</tr>
+<tr>
+<td>Out of stock</td>
+<td>409 Conflict</td>
+</tr>
+<tr>
+<td>Payment failure</td>
+<td>Order rolled back</td>
+</tr>
+</tbody>
+</table>
+<hr>
+<h2 id="7-logging--monitoring">7. Logging &amp; Monitoring</h2>
+<ul>
+<li>Log order creation failures</li>
+<li>Monitor payment latency</li>
+<li>Track API response times</li>
+</ul>
+<hr>
+<h2 id="8-what-you-must-internalize">8. What You Must Internalize</h2>
+<table>
+<thead>
+<tr>
+<th>HLD</th>
+<th>LLD</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Big picture</td>
+<td>Details</td>
+</tr>
+<tr>
+<td>Components</td>
+<td>Classes</td>
+</tr>
+<tr>
+<td>Interactions</td>
+<td>Method calls</td>
+</tr>
+<tr>
+<td>Technology-agnostic</td>
+<td>Technology-specific</td>
+</tr>
+</tbody>
+</table>
+<hr>
+<h2 id="one-line-rules-to-remember">One-Line Rules To Remember</h2>
+<blockquote>
+<p><strong>If it fits on one whiteboard → HLD</strong>
+<strong>If it needs code-level detail → LLD</strong></p>
+</blockquote>
+
+</body>
+</html>
